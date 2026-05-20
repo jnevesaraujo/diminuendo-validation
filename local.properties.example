@@ -1,0 +1,8 @@
+# Copy to `local.properties` (NOT versioned) and fill in.
+# sdk.dir is normally filled in by Android Studio.
+
+sdk.dir=/caminho/para/Android/sdk
+
+# Secrets exposed via BuildConfig (see docs/10_security_and_permissions.md)
+AI_API_KEY=put_your_key_here
+BACKEND_BASE_URL=https://api.example.com/

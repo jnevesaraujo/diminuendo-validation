@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">DAM FP</string>
+    <string name="sample_title">Items (example)</string>
+    <string name="retry">Try again</string>
+    <string name="offline_banner">No connection — showing cached data</string>
+    <string name="premium_badge">PREMIUM</string>
+    <string name="empty_list">Nothing to show</string>
+</resources>

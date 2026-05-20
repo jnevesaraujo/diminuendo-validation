@@ -1,0 +1,4 @@
+<resources>
+    <!-- Tema base da Activity. A UI real usa Material 3 em Compose (ui/theme). -->
+    <style name="Theme.DamFp" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

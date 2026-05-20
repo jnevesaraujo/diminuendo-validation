@@ -1,0 +1,38 @@
+# --- Ponteiros de contexto de IA (locais, NÃO versionar) ---
+# Gerados por scripts/setup-ai-context.*  — a fonte única é AGENTS.md
+/CLAUDE.md
+/.github/copilot-instructions.md
+/.cursorrules
+/.cursor/
+/.windsurfrules
+/.aider*
+
+# --- Android / Gradle ---
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.keystore
+*.jks
+/app/build/
+/app/release/
+
+# --- Segredos ---
+secrets.properties
+google-services.json
+*.env
+
+# --- Kotlin/Java ---
+*.class
+*.log
+hs_err_pid*
+
+# Ferramentas locais
+/.claude/
