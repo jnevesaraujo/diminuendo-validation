@@ -9,15 +9,15 @@
 
 **Course:**  Mobile Application Development (DAM)
 
-**Student Number:** `student number`
+**Student Number:** `50274`
 
-**Student Name:** `student name`
+**Student Name:** `Joana Araújo`
 
-**Student Email:** `student email`
+**Student Email:** `a50274@alunos.isel.pt`
 
-**Student class:** `student class` (e.g. LEIM61D)
+**Student class:** `61N`
 
-**Student GitHub:** `student github DAM Classroom repository link`
+**Student GitHub:** `https://github.com/ISEL-LEIM-DAM-SV2526/final-project-jnevesaraujo`
 
 **Date:** `delivery date`
 
