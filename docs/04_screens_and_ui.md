@@ -48,7 +48,7 @@
 ### Screen: Home / Heatmap Screen
 - **User stories:** US-01, US-02, US-03
 - **Layout (wireframe / sketch):** 
-
+```
 +-----------------------------------+
 | [ Search Location...            ] |
 +-----------------------------------+
@@ -62,7 +62,7 @@
 | Noise peak hours (Bar Chart):     |
 | █ █ █ ▄ ▄ ▄ █ █ █ █ [♕ PREMIUM]  |
 +-----------------------------------+
-
+```
 
 - **Compose components:** `HeatmapScreen`, `GoogleMapViewContainer`, `ZoneInsightsBottomSheet`, `HeatmapViewModel`
 - **UI states:**
@@ -77,7 +77,7 @@
 ### Screen: Capture Screen
 - **User stories:** US-01, US-04, US-05
 - **Layout (wireframe / sketch):**
-
+```
 +-----------------------------------+
 | Diminuendo               [Profile]|
 +-----------------------------------+
@@ -95,7 +95,7 @@
 |                                   |
 |       (( SAVE MEASUREMENT ))      |
 +-----------------------------------+
-
+```
 - **Compose components:** `CaptureScreen`, `DecibelMeterGauge`, `WaveformVisualizer`, `CaptureViewModel` 
 - **UI states:**
   - Loading: System initializations while requesting raw hardware audio subsystem access pointers.
@@ -109,20 +109,20 @@
 ### Screen: Diary Screen
 - **User stories:** US-01, US-04
 - **Layout (wireframe / sketch):**
-
+```
 +-----------------------------------+
 | Exposure History        [Filters] |
 +-----------------------------------+
 |  [LOUD] Metro Line A              |
-|  14:32 - 88 dB   ~-~~ (Wave)  [X] |
+|  14:32 - 88 dB   ~~~~ (Wave)  [X] |
 |                                   |
 |  [MODERATE] Office Space          |
-|  09:15 - 62 dB   ~~-~ (Wave)  [X] |
+|  09:15 - 62 dB   ~~~~ (Wave)  [X] |
 |                                   |
 |  [QUIET] Public Library           |
-|  08:00 - 40 dB   ~-~~ (Wave)  [X] |
+|  08:00 - 40 dB   ~~~~ (Wave)  [X] |
 +-----------------------------------+
-
+```
 - **Compose components:** `DiaryScreen`, `HistoryLogCardItem`, `DiaryViewModel`
 - **UI states:**
   - Loading: Queries regional SQLite/Room system database tables and cloud server record history indices.
@@ -136,7 +136,7 @@
 ### Screen: AI Consultant
 - **User stories:** US-01, US-03, US-06
 - **Layout (wireframe / sketch):** 
-
+```
 +-----------------------------------+
 | Gemini Advisor                    |
 +-----------------------------------+
@@ -150,7 +150,7 @@
 | | Ask Diminuendo...          [^]| |
 | +-------------------------------+ |
 +-----------------------------------+
-
+```
 - **Compose components:** `AiConsultantScreen`, `ChatBubbleLayout`, `QueryChipRow`, `AiViewModel`
 - **UI states:**
   - Loading: Displays an animated bouncing ellipsis typing indicator while waiting for the Gemini API server response token stream.
