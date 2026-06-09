@@ -25,7 +25,7 @@
 |---|---|---|---|
 | `auth` | — | AuthScreen | free |
 | `heatmap` | — | HeatmapScreen (Home) | free with busy times as premium feature |
-| `capture` | — | CaptureScreen | — |
+| `capture` | — | CaptureScreen | free |
 | `diary` | — | DiaryScreen | free |
 | `ai_consultant` | — | AiConsultantScreen | Free (Daily limits apply) |
 | `paywall` | — | PaywallScreen | free |

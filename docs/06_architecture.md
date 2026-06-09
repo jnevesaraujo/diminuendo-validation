@@ -22,51 +22,54 @@ Dependency rule: `ui → domain → data` through interfaces. **The UI never kno
 ## Package structure (follow this)
 
 ```
-com.example.app
-├── di/                 # Hilt (modules) — or Koin
+dam.a50274.diminuendo
+├── di/                 # Hilt (modules) for dependency injection
 ├── data/
-│   ├── local/          # Room (DAO, Entities), DataStore
-│   ├── remote/         # Retrofit/Ktor (API, DTOs)
-│   ├── repository/     # implementations
-│   └── mapper/         # DTO/Entity <-> domain
+│   ├── local/          # Room (DAO, Entities), DataStore (Preferences)
+│   ├── remote/         # Firebase SDK (Auth, Firestore, Vertex AI) wrappers
+│   ├── repository/     # Repository implementation classes
+│   └── mapper/         # DTO / Entity <-> Domain Model mappers
 ├── domain/
-│   ├── model/
-│   ├── repository/     # interfaces
-│   └── usecase/
+│   ├── model/          # Pure Kotlin domain data classes (User, Measurement)
+│   ├── repository/     # Abstract repository interfaces
+│   └── usecase/        # Single-responsibility business logic units
 └── ui/
-    ├── navigation/
-    ├── theme/
-    ├── components/
-    └── feature/<x>/    # Screen + ViewModel + UiState
+    ├── navigation/     # NavHost setup and type-safe routing definitions
+    ├── theme/          # Color schemes (Neon Nocturne & Acoustic Clarity)
+    ├── components/     # Reusable composables (GlassCard, AcousticButton)
+    └── feature/<x>/    # Screen + ViewModel + UiState per feature block
 ```
 
 ## Dependency injection
 
-- Choice: **Hilt** _or_ **Koin** → record in an ADR (see `docs/adr/0001-di-hilt-vs-koin.md`).
-- The skeleton in `app/` uses **Hilt** as an example.
+- Choice: **Hilt** → record in an ADR (see `docs/adr/0001-di-hilt-vs-koin.md`).
+- The application uses Hilt to inject repositories, use cases, and ViewModels cleanly across layers.
 
 ## Networking
 
-- Choice: **Retrofit** _or_ **Ktor** → ADR.
-- The skeleton uses **Retrofit + OkHttp + kotlinx.serialization**.
+- Choice: **Firebase Native Android SDKs** (Firestore, Auth, and Vertex AI for Firebase) act as our remote infrastructure gateway. Standard HTTP rest endpoints via Retrofit or Ktor are bypassed in favor of Firebase's real-time binary transport channel.
 
 ## Offline strategy (mandatory)
 
-- **Single Source of Truth = Room.** The UI observes the database, not the network.
-- Repository: network → updates Room → UI reacts. No network → serves Room.
-- Offline writes: queue / `pendingSync` flag; syncs when the connection is restored.
+- **Single Source of Truth = Room**. The UI observes the local database streams, not direct network tasks.
+- Repository flow: Firebase updates → patches Room storage local rows → UI reacts dynamically.
+- Offline writes: When recording a sound metric offline, entries are flagged with a `pendingSync = true` state marker inside the Room table. An Android `WorkManager` routine routinely polls
 - Model detail: `docs/07_data_model.md`. State: `docs/08_state_management.md`.
 
 ## State sharing between users (mandatory)
 
-- Backend / service: <Firebase / Supabase / own API / ...> → describe in `docs/09`.
-- Synchronization strategy and conflict resolution: <...>
+- Backend / service: **Firebase Cloud Firestore**.
+- Synchronization strategy and conflict resolution: Individual geographic acoustic coordinates are pushed continuously to a shared global collection. To build the heatmap, active clients subscribe to real-time geospatial document bounds via snapshot listeners. Structural synchronization conflicts or duplicate submissions are automatically resolved via a strict **last-write-wins (timestamp-based)** pipeline.
 
 ## Freemium (mandatory)
 
-- Subscription state (simulated) stored in **DataStore** (`isPremium`).
-- Centralized check in a UseCase (`CheckEntitlementUseCase`), not spread across the UI.
+- Subscription state (simulated) stored in **Jetpack DataStore** (`isPremium`).
+- Access validation is controlled exclusively by `CheckEntitlementUseCase` inside the domain layer, making it impossible for the user interface components to bypass plan restrictions directly.
 
 ## Environment
 
-- Android Studio: <version> · JDK 17 · minSdk <xx> · targetSdk <xx> · Kotlin <version>
+- Android Studio: Ladybug (2024.2.1) or later
+- JDK: 17
+- minSdk: 26 (Android 8.0 - required for low-overhead audio processing APIs)
+- targetSdk: 35 (Android 15)
+- Kotlin: 2.0.0 (Jetpack Compose Compiler integrated)
