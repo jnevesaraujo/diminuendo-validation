@@ -11,17 +11,23 @@ Format: see `prompts/README.md`. Record UI prompts (Composables, state, theme, n
 
 ---
 
-### #p1 — (example) Stateless list screen
+### #p1 — M1, navigation shell
 
-- Tool: <...>
-- Date: 2026-05-19
+- Tool: Antigravity
+- Date: 2026-06-9
 - Context given to the AI: `docs/04`, `docs/08`, `ui/components/`, `SampleScreen.kt`
 
 **Prompt:**
-> Create a Composable `XxxScreen(state: XxxUiState, onAction: (XxxAction) -> Unit)` in
-> Material 3, stateless, with loading/empty/error/content states, reusing
-> `LoadingIndicator` and `ErrorView` from `ui/components`. Include `@Preview`. Follow the
-> pattern of `SampleScreen.kt`. Do not access repositories directly.
+Using docs/05_navigation.md and docs/04_screens_and_ui.md, implement the navigation shell for Diminuendo:
+
+NavGraph.kt in ui/navigation/ with type-safe routes: auth, heatmap, capture, diary, ai_consultant, paywall
+Bottom navigation bar with 4 icons (heatmap, capture, diary, ai_consultant) using launchSingleTop = true, restoreState = true, and popUpTo as specified in docs/05
+Each destination as a completely empty placeholder Composable — no business logic, just a Text("ScreenName") centered on screen
+Deep link diminuendo://capture registered on the capture route
+AuthScreen as the start destination, outside the bottom bar
+Dark/Light theme scaffold from docs/04 design system (color tokens only, no full implementation yet)
+
+The app must navigate between all screens without crashes. Do not implement any ViewModel or state yet. assembleDebug must stay green.
 
 **Result:** <fill in>
 **Assessment:** <Accepted/Edited/Rejected — why>
