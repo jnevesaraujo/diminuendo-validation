@@ -27,7 +27,7 @@ data class HeatmapUiState(
 |---|---|---|
 | Exposure Diary History | Room (Flow stream query) | `DiaryViewModel` |
 | Connectivity / Offline Banner | Network ConnectivityObserver | All active ViewModels |
-| Subscription Status (Premium) | Jetpack DataStore preferences file | `CheckEntitlementUseCase` → `HeatmapViewModel` / `AiViewModel` |
+| Subscription Status (Premium) | Jetpack DataStore preferences file | `SubscriptionUseCase` → `HeatmapViewModel` / `AiViewModel` |
 | User Identity Session | Firebase Auth State Listener | `AuthViewModel` |
 | Global Acoustic Heatmap Data | Cloud Firestore Real-time Snapshots | Data Layer Synchronization Pipeline → Room Cache |
 

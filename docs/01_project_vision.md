@@ -24,7 +24,7 @@ City dwellers, daily commuters, remote workers seeking quiet spaces, individuals
 
 | Requirement | How it will be met |
 |---|---|
-| 3–5 main screens | The app will feature 5 main views: Auth (Login/Register), Dashboard (Real-time dB Meter), Heatmap (Google Maps view), Exposure Diary (History log), and Gemini AI Chatbot Consultant. |
+| 3–5 main screens | The app will feature 5 main views: Auth (Login/Register), Capture (Real-time dB Meter), Heatmap (Google Maps view), Exposure Diary (History log), and Gemini AI Chatbot Consultant. |
 | State sharing between users | Anonymized decibel measurements from individual users are continuously synchronized via Firebase Firestore to dynamically update a shared global noise heatmap for all active users. |
 | AI (remote or local API) | Integration with the Gemini API (via Firebase Vertex AI SDK) to analyze user exposure logs and provide personalized safety advice and quieter route recommendations. |
 | Image / audio / video | Accesses the device's microphone via the Android Audio framework to capture sound amplitude data, which is mathematically processed into decibel metrics. |

@@ -14,6 +14,7 @@
 	- `id`: String
 	- `userId`: String
 	- `dbLevel`: Double
+	- `waveform`: IntArray
 	- `timestamp`: Long
 	- `latitude`: Double
 	- `longitude`: Double
@@ -36,7 +37,8 @@
 | id (PK)       |1       0..* | id (PK)             |
 | name          |------------>| userId (FK)         |
 | email         |             | dbLevel             |
-+---------------+             | timestamp           |
++---------------+             | waveform            |
+							  | timestamp           |
                               | latitude            |
                               | longitude           |
 +---------------+             | contextTag          |
@@ -74,8 +76,9 @@ Since the application uses the Firebase Android SDK, remote network operations i
 | Key | Type | Purpose |
 |---|---|---|
 | `is_premium` | Boolean | Tracks the simulated premium subscription flag status to unlock specific app layouts. |
-| `onboarding_done` | Boolean | Checks if the application introductory slideshow has already been completed by the client. |
 | `user_id` | String | Caches the currently authenticated user identifier string locally for low-latency session checks. |
+| `ai_daily_count` | Int | Tracks the number of Gemini AI prompts used today by a free-tier user. Resets to 0 when the current date exceeds `ai_count_reset_date`. Capped at 3; blocked when equal to or above the limit. |
+| `ai_count_reset_date` | Long | Unix epoch timestamp (start of day) of the last reset. Compared against the current date on each AI request to determine if `ai_daily_count` should reset. |
 
 ## Mappings
 

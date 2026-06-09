@@ -10,7 +10,7 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 
 | Date | Tool | Goal | Prompt (ref. in `prompts/`) | Result | Accepted / Rejected / Edited | Why |
 |---|---|---|---|---|---|---|
-| 2026-05-?? | Claude Code | SampleRepository skeleton | `architecture_prompts.md#p1` | Code with cache | Edited | Missing offline handling; adjusted to SSOT Room |
+| 2026-06-09 | Antigravity | M0 scaffold | `architecture_prompts.md#p1` | Full skeleton compiled | Edited | Rename missing packages and added TypeConverters |
 | | | | | | | |
 
 ## AI errors / hallucinations detected

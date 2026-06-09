@@ -20,11 +20,11 @@ val localProps =
 fun secret(key: String, default: String = "") = (localProps.getProperty(key) ?: System.getenv(key) ?: default)
 
 android {
-    namespace = "com.example.damfp"
+    namespace = "dam.a50274.diminuendo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.damfp"
+        applicationId = "dam.a50274.diminuendo"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -97,6 +97,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.kotlinx.coroutines.android)
 
+    val firebaseBom = platform(libs.firebase.bom)
+    implementation(firebaseBom)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)

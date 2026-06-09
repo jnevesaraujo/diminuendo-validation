@@ -37,7 +37,7 @@ GEMINI_API_KEY=your_optional_fallback_ai_studio_key_here
 ## Authentication / authorization
 
 - Session Tracking: Users access application functions by setting up an account profile verified using Firebase Auth (Email access matrix or alternative OAuth mechanisms). An active secure session token is required to read or edit personal exposure histories.
-- Premium Plan Validation: Access validation checking for features like advanced "Busy Hours" graphs is evaluated by the centralized `CheckEntitlementUseCase`. This checks a client-side premium state flag mirrored down to the local Jetpack DataStore preferences container directly from the user's Firestore profile properties.
+- Premium Plan Validation: Access validation checking for features like advanced "Busy Hours" graphs is evaluated by the centralized `SubscriptionUseCase`. This checks a client-side premium state flag mirrored down to the local Jetpack DataStore preferences container directly from the user's Firestore profile properties.
 - Limitation Context: Managing verification flags entirely on a client-side device introduces risks if a deployment runs on specialized rooted hardware. However, for the scope of this implementation MVP model, isolating logic within decoupled UseCase boundaries establishes clean architectural foundations that can be easily migrated to rigid cloud server-side verification pipelines later.
 
 ## Checklist

@@ -24,7 +24,7 @@ junit = "4.13.2"
 mockk = "1.13.12"
 turbine = "1.1.0"
 ktlintPlugin = "12.1.1"
-
+firebaseBom = "33.1.2"
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -67,7 +67,7 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
-
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

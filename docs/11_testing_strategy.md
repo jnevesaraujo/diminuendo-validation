@@ -14,7 +14,7 @@
 
 ## What must be tested
 
-- [x] **Freemium logic (free vs premium):** Unit verification within `CheckEntitlementUseCase` to guarantee that user tier variables fetched from local DataStore storage elements accurately toggle features or trigger paywall navigation routes.
+- [x] **Freemium logic (free vs premium):** Unit verification within `SubscriptionUseCase` to guarantee that user tier variables fetched from local DataStore storage elements accurately toggle features or trigger paywall navigation routes.
 - [x] **Offline behavior:** Repository layer orchestration ensuring that if the connectivity observer signals a network blackout, structural read queries safely default to pulling data blocks from the Room persistence cache rather than triggering network timeouts.
 - [x] **Data transformations:** Bidirectional execution assertions validating mapping layers (`MeasurementDto` ↔ `MeasurementEntity` ↔ `Measurement` domain) to verify that metadata (like Geohash IDs or timestamp longs) map correctly across borders without silent truncation.
 - [x] **ViewModel architectural state changes:** Verification covering at least one primary functional view model state loop (e.g., `HeatmapViewModel`), checking that interactive execution routines smoothly transition the immutable `UiState` across `Loading`, `Content`, `Error`, and `Offline` configurations.
@@ -34,7 +34,7 @@
 
 See the boilerplate examples provided in the architecture root directory paths:
 - `app/src/test/java/dam/a50274/diminuendo/ui/feature/heatmap/HeatmapViewModelTest.kt`
-- `app/src/test/java/dam/a50274/diminuendo/domain/usecase/CheckEntitlementUseCaseTest.kt`
+- `app/src/test/java/dam/a50274/diminuendo/domain/usecase/SubscriptionUseCaseTest.kt`
 
 ---
 

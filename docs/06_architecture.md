@@ -53,18 +53,18 @@ dam.a50274.diminuendo
 
 - **Single Source of Truth = Room**. The UI observes the local database streams, not direct network tasks.
 - Repository flow: Firebase updates → patches Room storage local rows → UI reacts dynamically.
-- Offline writes: When recording a sound metric offline, entries are flagged with a `pendingSync = true` state marker inside the Room table. An Android `WorkManager` routine routinely polls
+- Offline writes: When recording a sound metric offline, entries are flagged with a `pendingSync = true` state marker inside the Room table. An Android `WorkManager` routine routinely polls the Room table for entries flagged with `pendingSync = true` and uploads them to Firestore, retrying with exponential backoff until the upload is confirmed.
 - Model detail: `docs/07_data_model.md`. State: `docs/08_state_management.md`.
 
 ## State sharing between users (mandatory)
 
 - Backend / service: **Firebase Cloud Firestore**.
-- Synchronization strategy and conflict resolution: Individual geographic acoustic coordinates are pushed continuously to a shared global collection. To build the heatmap, active clients subscribe to real-time geospatial document bounds via snapshot listeners. Structural synchronization conflicts or duplicate submissions are automatically resolved via a strict **last-write-wins (timestamp-based)** pipeline.
+- Synchronization strategy and conflict resolution: When a new measurement arrives for a geohash zone, the repository performs an incremental update on the `NoiseZone` document using Firestore's atomic increment operators: `hourlyAverages[hour]` is recalculated as a running weighted average using `totalContributions` as the weight, and `totalContributions` is incremented by 1. This avoids read-modify-write races on the aggregate.".
 
 ## Freemium (mandatory)
 
 - Subscription state (simulated) stored in **Jetpack DataStore** (`isPremium`).
-- Access validation is controlled exclusively by `CheckEntitlementUseCase` inside the domain layer, making it impossible for the user interface components to bypass plan restrictions directly.
+- Access validation is controlled exclusively by `SubscriptionUseCase` inside the domain layer, making it impossible for the user interface components to bypass plan restrictions directly.
 
 ## Environment
 
