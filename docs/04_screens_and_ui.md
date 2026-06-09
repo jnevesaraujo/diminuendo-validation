@@ -17,7 +17,7 @@
 ### Screen: Auth Screen
 - **User stories:** US-01
 - **Layout (wireframe / sketch):**
-
+```
 +-----------------------------------+
 |            DIMINUENDO             |
 |   [Light / Dark Mode Toggle]      |
@@ -34,7 +34,7 @@
 |    - OR - Alternative Matrix -    |
 |       [G] Google   [A] Apple      |
 +-----------------------------------+
-
+```
 - **Compose components:** `AuthScreen`, `AuthCardContent`, `AuthViewModel`
 - **UI states:**
   - Loading: Disables entry input fields; overlays a centered Material 3 indeterminate circular progress indicator.
