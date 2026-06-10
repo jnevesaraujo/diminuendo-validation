@@ -74,7 +74,7 @@ Would you like to implement the DataStore authentication next, or dive into the 
 
 ---
 
-### #p2 — M6 (audio capture) before M2
+### #p3 — M6 (audio capture) before M2
 
 - Tool: Antigravity
 - Date: 2026-06-10
@@ -94,6 +94,19 @@ Rules: no raw audio files saved anywhere. Permission request triggered only on "
 
 
 **Result:** 
+The implementation for the Audio Capture Pipeline is complete!
+
+I've updated the walkthrough.md with a summary of the additions:
+
+Audio Capture Repository (AudioRecord): A proper flow-based AudioRecord implementation that safely captures microphone buffers and computes the root mean square (RMS) locally into a Decibel flow, while never writing any raw .wav or buffer data to disk, strictly enforcing the privacy requirement.
+CaptureViewModel State Management: It orchestrates the timer, peak DB calculations, and the live 20-sample waveform snapshot buffer securely from the flow emissions.
+Animated Gauge & Waveform Canvas: The CaptureScreen is now fully visualized! It displays real-time averageDb, peakDb, and elapsedSeconds alongside a custom circular Canvas drawing the dB meter and the trailing bar chart for the waveform.
+Dynamic Permissions: The RECORD_AUDIO permission is perfectly lazy — it only prompts the user through rememberLauncherForActivityResult when they explicitly tap the "Start" button.
+Save Pipeline: Tapping "Save" takes the local 20-length buffer, normalizes the heights from 0-100%, and drops it straight into the Room database via SaveMeasurementUseCase.
+The build fully succeeds! You can tap diminuendo://capture or jump into it via your app shell to try it out.
+
+What feature would you like to tackle next?
+
 
 **Assessment:** Edited
 
