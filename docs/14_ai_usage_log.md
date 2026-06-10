@@ -16,6 +16,7 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 | 2026-06-10 | Antigravity | M3 mock user | `architecture_prompts.md#p2` | Hardcoded mock userId for local testing before Firebase Auth | Accepted | Temporary; will be replaced in M2 with real Firebase Auth uid |
 | 2026-06-10 | Antigravity | M2 Firebase Auth | `architecture_prompts.md#p3` | Created classes for Firebase Auth | Edited | Included debug prompt |
 | 2026-06-09 | Antigravity | Debug Firebase Auth | `debugging_prompts.md#p2` | Missed some requirements | Accepted | Completed debug prompt |
+| 2026-06-10 | Antigravity | M4 Firestore heatmap — NoiseZone sync, HeatmapViewModel, Maps overlay | `architecture_prompts.md#p5` | Firestore snapshot listener, Room SSOT, heatmap overlay, weighted average update | Accepted / Edited | <fill in any adjustments you made> |
 | | | | | | | |
 
 ## AI errors / hallucinations detected
