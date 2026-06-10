@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
         MeasurementEntity::class,
         NoiseZoneEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

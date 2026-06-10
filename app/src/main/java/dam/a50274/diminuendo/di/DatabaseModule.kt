@@ -22,11 +22,16 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "diminuendo_db",
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
     fun provideMeasurementDao(database: AppDatabase): MeasurementDao {
         return database.measurementDao()
+    }
+
+    @Provides
+    fun provideNoiseZoneDao(database: AppDatabase): dam.a50274.diminuendo.data.local.NoiseZoneDao {
+        return database.noiseZoneDao()
     }
 }

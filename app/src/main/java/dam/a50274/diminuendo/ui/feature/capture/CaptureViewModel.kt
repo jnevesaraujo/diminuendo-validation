@@ -1,8 +1,11 @@
 package dam.a50274.diminuendo.ui.feature.capture
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dam.a50274.diminuendo.data.local.PreferencesKeys
 import dam.a50274.diminuendo.domain.model.Measurement
 import dam.a50274.diminuendo.domain.repository.AudioCaptureRepository
 import dam.a50274.diminuendo.domain.usecase.SaveMeasurementUseCase
@@ -21,6 +24,7 @@ import kotlin.math.max
 class CaptureViewModel @Inject constructor(
     private val audioCaptureRepository: AudioCaptureRepository,
     private val saveMeasurementUseCase: SaveMeasurementUseCase,
+    private val dataStore: DataStore<Preferences>,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CaptureUiState())
@@ -33,8 +37,15 @@ class CaptureViewModel @Inject constructor(
     private var dbReadingsSum = 0.0
     private var dbReadingsCount = 0
 
-    // Using a mock userId for testing purposes
-    private val mockUserId = "mock_user_123"
+    private var currentUserId: String = ""
+
+    init {
+        viewModelScope.launch {
+            dataStore.data.collect { prefs ->
+                currentUserId = prefs[PreferencesKeys.USER_ID] ?: ""
+            }
+        }
+    }
 
     fun onAction(action: CaptureAction) {
         when (action) {
@@ -116,7 +127,7 @@ class CaptureViewModel @Inject constructor(
 
         val measurement = Measurement(
             id = UUID.randomUUID().toString(),
-            userId = mockUserId,
+            userId = currentUserId.ifEmpty { "debug_user" },
             dbLevel = state.averageDb,
             waveform = normalizedWaveform,
             timestamp = System.currentTimeMillis(),

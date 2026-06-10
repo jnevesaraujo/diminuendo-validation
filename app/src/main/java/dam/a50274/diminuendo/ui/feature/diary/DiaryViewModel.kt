@@ -1,8 +1,11 @@
 package dam.a50274.diminuendo.ui.feature.diary
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dam.a50274.diminuendo.data.local.PreferencesKeys
 import dam.a50274.diminuendo.domain.model.Measurement
 import dam.a50274.diminuendo.domain.usecase.DeleteMeasurementUseCase
 import dam.a50274.diminuendo.domain.usecase.GetMeasurementHistoryUseCase
@@ -10,6 +13,8 @@ import dam.a50274.diminuendo.domain.usecase.SaveMeasurementUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -21,21 +26,23 @@ class DiaryViewModel @Inject constructor(
     getMeasurementHistoryUseCase: GetMeasurementHistoryUseCase,
     private val deleteMeasurementUseCase: DeleteMeasurementUseCase,
     private val saveMeasurementUseCase: SaveMeasurementUseCase,
+    private val dataStore: DataStore<Preferences>,
 ) : ViewModel() {
 
-    // TODO: Uncomment for final implementation
-    // private val userId = dataStore.data.map { preferences -> preferences[USER_ID_KEY] ?: "" }
-
-    // Using a mock userId for testing purposes
-    private val mockUserId = "mock_user_123"
-
-    val uiState: StateFlow<DiaryUiState> = getMeasurementHistoryUseCase(mockUserId)
-        .map { measurements ->
-            DiaryUiState(
-                isLoading = false,
-                measurements = measurements,
-                error = null,
-            )
+    val uiState: StateFlow<DiaryUiState> = dataStore.data
+        .map { it[PreferencesKeys.USER_ID] ?: "" }
+        .flatMapLatest { userId ->
+            if (userId.isEmpty()) {
+                flowOf(DiaryUiState(isLoading = false, error = "Not authenticated"))
+            } else {
+                getMeasurementHistoryUseCase(userId).map { measurements ->
+                    DiaryUiState(
+                        isLoading = false,
+                        measurements = measurements,
+                        error = null,
+                    )
+                }
+            }
         }
         .catch { e ->
             emit(DiaryUiState(isLoading = false, error = e.message ?: "Unknown error"))
@@ -64,7 +71,8 @@ class DiaryViewModel @Inject constructor(
                 viewModelScope.launch {
                     val dummy = Measurement(
                         id = UUID.randomUUID().toString(),
-                        userId = mockUserId,
+                        // Fallback for debug insert
+                        userId = "debug_user",
                         dbLevel = (40..100).random().toDouble(),
                         waveform = intArrayOf(),
                         timestamp = System.currentTimeMillis(),

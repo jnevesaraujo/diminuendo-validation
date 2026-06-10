@@ -8,21 +8,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import dam.a50274.diminuendo.ui.feature.ai.AiConsultantScreen
-import dam.a50274.diminuendo.ui.feature.auth.AuthScreen
+import dam.a50274.diminuendo.ui.feature.auth.AuthScreenRoot
 import dam.a50274.diminuendo.ui.feature.capture.CaptureScreenRoot
 import dam.a50274.diminuendo.ui.feature.diary.DiaryScreenRoot
 import dam.a50274.diminuendo.ui.feature.heatmap.HeatmapScreen
 import dam.a50274.diminuendo.ui.feature.paywall.PaywallScreen
 
 @Composable
-fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
+fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier, startDestination: Any = Auth) {
     NavHost(
         navController = navController,
-        startDestination = Auth,
+        startDestination = startDestination,
         modifier = modifier,
     ) {
         composable<Auth> {
-            AuthScreen(
+            AuthScreenRoot(
                 onNavigateToHome = {
                     navController.navigate(Heatmap) {
                         popUpTo(Auth) { inclusive = true }

@@ -21,7 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun AppShell() {
+fun AppShell(startDestination: Any = Auth) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -98,6 +98,7 @@ fun AppShell() {
         AppNavGraph(
             navController = navController,
             modifier = Modifier.padding(innerPadding),
+            startDestination = startDestination,
         )
     }
 }

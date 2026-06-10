@@ -20,4 +20,9 @@ abstract class RepositoryModule {
     abstract fun bindAudioCaptureRepository(
         audioCaptureRepositoryImpl: AudioCaptureRepositoryImpl,
     ): AudioCaptureRepository
+
+    @Binds
+    abstract fun bindNoiseZoneRepository(
+        noiseZoneRepositoryImpl: dam.a50274.diminuendo.data.repository.NoiseZoneRepositoryImpl,
+    ): dam.a50274.diminuendo.domain.repository.NoiseZoneRepository
 }

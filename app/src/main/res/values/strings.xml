@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DAM FP</string>
+    <string name="app_name">DIMINUENDO</string>
     <string name="sample_title">Items (example)</string>
     <string name="retry">Try again</string>
     <string name="offline_banner">No connection — showing cached data</string>

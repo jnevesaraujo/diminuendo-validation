@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.google.services)
 }
 
 // Lê segredos de local.properties (NÃO versionado) e expõe via BuildConfig.
@@ -32,6 +33,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "AI_API_KEY", "\"${secret("AI_API_KEY")}\"")
+        buildConfigField("String", "MAPS_API_KEY", "\"${secret("MAPS_API_KEY")}\"")
+        manifestPlaceholders["MAPS_API_KEY"] = secret("MAPS_API_KEY")
         buildConfigField(
             "String",
             "BACKEND_BASE_URL",
@@ -99,6 +102,14 @@ dependencies {
 
     val firebaseBom = platform(libs.firebase.bom)
     implementation(firebaseBom)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    implementation(libs.maps.compose)
+    implementation(libs.maps.compose.utils)
+    implementation(libs.play.services.maps)
+
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
