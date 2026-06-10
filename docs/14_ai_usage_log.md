@@ -11,6 +11,9 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 | Date | Tool | Goal | Prompt (ref. in `prompts/`) | Result | Accepted / Rejected / Edited | Why |
 |---|---|---|---|---|---|---|
 | 2026-06-09 | Antigravity | M0 scaffold | `architecture_prompts.md#p1` | Full skeleton compiled | Edited | Rename missing packages and added TypeConverters |
+| 2026-06-09 | Antigravity | M1 navigation shell | `compose_prompts.md#p1` | Auth screen compiled: unable to verify rest and deep link failed | Edited | Made debug prompt |
+| 2026-06-09 | Antigravity | Debug Navigation | `debugging_prompts.md#p1` | All screens compiled and deep link returned ok | Edited | Made debug prompt |
+| 2026-06-10 | Antigravity | M3 mock user | `architecture_prompts.md#p2` | Hardcoded mock userId for local testing before Firebase Auth | Accepted | Temporary; will be replaced in M2 with real Firebase Auth uid |
 | | | | | | | |
 
 ## AI errors / hallucinations detected

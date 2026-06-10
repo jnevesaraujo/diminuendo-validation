@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import dam.a50274.diminuendo.ui.feature.ai.AiConsultantScreen
 import dam.a50274.diminuendo.ui.feature.auth.AuthScreen
-import dam.a50274.diminuendo.ui.feature.capture.CaptureScreen
-import dam.a50274.diminuendo.ui.feature.diary.DiaryScreen
+import dam.a50274.diminuendo.ui.feature.capture.CaptureScreenRoot
+import dam.a50274.diminuendo.ui.feature.diary.DiaryScreenRoot
 import dam.a50274.diminuendo.ui.feature.heatmap.HeatmapScreen
 import dam.a50274.diminuendo.ui.feature.paywall.PaywallScreen
 
@@ -41,10 +41,10 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier)
                 },
             ),
         ) {
-            CaptureScreen()
+            CaptureScreenRoot()
         }
         composable<Diary> {
-            DiaryScreen()
+            DiaryScreenRoot()
         }
         composable<AiConsultant> {
             AiConsultantScreen()
