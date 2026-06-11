@@ -42,8 +42,5 @@ jobs:
       - name: Unit tests
         run: ./gradlew test --no-daemon
 
-      - name: Create Mock Google Services JSON
-        run: echo '{}' > app/google-services.json
-
       - name: Assemble debug
         run: ./gradlew assembleDebug --no-daemon
