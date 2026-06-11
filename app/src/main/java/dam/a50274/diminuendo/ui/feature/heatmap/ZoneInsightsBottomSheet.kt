@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -43,6 +44,7 @@ fun ZoneInsightsBottomSheet(isPremium: Boolean, selectedZoneDetails: NoiseZone?,
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .navigationBarsPadding()
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         // Header Area (Always Visible & Clickable)
@@ -163,5 +165,5 @@ fun ZoneInsightsBottomSheet(isPremium: Boolean, selectedZoneDetails: NoiseZone?,
                 }
             }
         }
-    } 
+    }
 }

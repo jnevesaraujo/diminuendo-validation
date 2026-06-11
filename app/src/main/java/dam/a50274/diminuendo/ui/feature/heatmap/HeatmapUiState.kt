@@ -12,4 +12,5 @@ data class HeatmapUiState(
     val error: String? = null,
     val userInitialLocation: LatLng? = null,
     val searchLocationResult: LatLng? = null,
+    val tappedLocation: LatLng? = null,
 )

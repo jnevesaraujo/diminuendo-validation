@@ -4,21 +4,23 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,6 +49,29 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.heatmaps.HeatmapTileProvider
 import com.google.maps.android.heatmaps.WeightedLatLng
 import dam.a50274.diminuendo.R
+import dam.a50274.diminuendo.domain.model.NoiseZone
+import kotlinx.coroutines.launch
+
+private fun findNearestZone(target: LatLng, zones: List<NoiseZone>): NoiseZone? {
+    var nearestZone: NoiseZone? = null
+    var minDistance = Float.MAX_VALUE
+    val results = FloatArray(1)
+    for (zone in zones) {
+        android.location.Location.distanceBetween(
+            target.latitude,
+            target.longitude,
+            zone.centerLatitude,
+            zone.centerLongitude,
+            results,
+        )
+        val distance = results[0]
+        if (distance <= 500f && distance < minDistance) {
+            minDistance = distance
+            nearestZone = zone
+        }
+    }
+    return nearestZone
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +82,8 @@ fun HeatmapScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scaffoldState = rememberBottomSheetScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     val cameraPositionState = rememberCameraPositionState()
     var searchQuery by remember { mutableStateOf("") }
@@ -80,6 +107,16 @@ fun HeatmapScreen(
     LaunchedEffect(state.searchLocationResult) {
         state.searchLocationResult?.let { loc ->
             cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(loc, 14f))
+
+            val nearestZone = findNearestZone(loc, state.noiseZones)
+            viewModel.onAction(HeatmapAction.ZoneSelected(nearestZone, loc))
+            if (nearestZone != null) {
+                scaffoldState.bottomSheetState.expand()
+            } else {
+                scaffoldState.bottomSheetState.partialExpand()
+                snackbarHostState.showSnackbar("No noise data for this area yet")
+            }
+
             viewModel.onAction(HeatmapAction.ConsumeSearch)
         }
     }
@@ -109,7 +146,8 @@ fun HeatmapScreen(
                 windowInsets = WindowInsets(0),
             )
         },
-        sheetPeekHeight = 80.dp,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        sheetPeekHeight = 80.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
         sheetContent = {
             ZoneInsightsBottomSheet(
                 isPremium = state.isPremium,
@@ -126,12 +164,30 @@ fun HeatmapScreen(
                 GoogleMap(
                     modifier = Modifier.fillMaxSize().semantics { contentDescription = mapDesc },
                     cameraPositionState = cameraPositionState,
+                    onMapClick = { latLng ->
+                        val nearestZone = findNearestZone(latLng, state.noiseZones)
+                        viewModel.onAction(HeatmapAction.ZoneSelected(nearestZone, latLng))
+                        if (nearestZone != null) {
+                            coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
+                        } else {
+                            coroutineScope.launch {
+                                scaffoldState.bottomSheetState.partialExpand()
+                                snackbarHostState.showSnackbar("No noise data for this area yet")
+                            }
+                        }
+                    },
                 ) {
                     state.userInitialLocation?.let { loc ->
                         Marker(state = MarkerState(position = loc), title = "Current Location")
                     }
-                    state.searchLocationResult?.let { loc ->
-                        Marker(state = MarkerState(position = loc), title = "Search Result")
+                    state.tappedLocation?.let { loc ->
+                        Marker(
+                            state = MarkerState(position = loc),
+                            title = "Selected Location",
+                            icon = com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(
+                                com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE,
+                            ),
+                        )
                     }
                     if (state.noiseZones.isNotEmpty()) {
                         val provider = HeatmapTileProvider.Builder()
@@ -147,19 +203,23 @@ fun HeatmapScreen(
                         TileOverlay(tileProvider = provider)
                     }
                 }
-                TextField(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    placeholder = { Text("Search Location...") },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(onSearch = {
+                DockedSearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    onSearch = {
                         viewModel.onAction(HeatmapAction.SearchLocation(searchQuery))
-                    }),
+                    },
+                    active = false,
+                    onActiveChange = {},
+                    placeholder = { Text("Search location…") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp)
                         .align(Alignment.TopCenter),
-                )
+                ) {
+                    // No suggestions content
+                }
             }
         }
     }

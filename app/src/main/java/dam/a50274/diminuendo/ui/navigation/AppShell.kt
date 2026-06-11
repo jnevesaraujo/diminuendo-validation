@@ -39,7 +39,7 @@ fun AppShell(startDestination: Any = Auth) {
                     NavigationBarItem(
                         icon = { Icon(Icons.Default.Place, contentDescription = stringResource(R.string.nav_heatmap)) },
                         label = { Text(stringResource(R.string.nav_heatmap)) },
-                        selected = currentDestination?.hierarchy?.any { it.hasRoute<Heatmap>() } == true,
+                        selected = currentDestination.hierarchy.any { it.hasRoute<Heatmap>() },
                         onClick = {
                             navController.navigate(Heatmap) {
                                 popUpTo(Heatmap) {

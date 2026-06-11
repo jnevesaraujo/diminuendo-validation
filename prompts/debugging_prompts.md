@@ -343,6 +343,128 @@ App Icon: Added Image inside a Row to render the R.mipmap.ic_launcher map icon j
 Typography: Set the title string text style directly to MaterialTheme.typography.titleMedium.
 Preserved State: All pre-existing action components (Diary's filter icon, global Profile icon links, etc.) were left completely untouched.
 The project complies flawlessly; running ./gradlew ktlintFormat assembleDebug completed successfully with the build staying completely green! Let me know if you would like me to tackle anything else!
-**Did the AI get the cause right?** no
+**Did the AI get the cause right?** No
+
+---
+
+### #p13 Top bar size
+
+- Tool: Antigravity
+- Date: 2026-06-11
+
+**Prompt:**
+The TopAppBar has excessive padding/margin from the top of the screen. This is likely a window insets conflict where padding is being applied both at the Scaffold level and the TopAppBar level. Fix this:
+
+Check the main Scaffold or AppScaffold composable — if it applies padding.only(top = WindowInsets.statusBars) or similar, ensure the TopAppBar does not also apply its own top inset padding
+The correct pattern for Material 3 is: Scaffold handles all window insets via contentWindowInsets parameter, and TopAppBar uses windowInsets = WindowInsets(0) to opt out of applying its own
+The TopAppBar should sit flush against the status bar with only the system status bar height as separation — no additional padding above it
+Only change the Scaffold and TopAppBar composable wiring. Do not touch any other component.
+
+assembleDebug must stay green.
+
+**Identified cause:** cause included in the prompt
+**Fix:** he excessive padding bug caused by the double application of status bar insets has been resolved!
+
+I updated the TopAppBar definition in the following screens to pass windowInsets = WindowInsets(0):
+
+HeatmapScreen.kt
+ProfileScreen.kt
+CaptureScreen.kt
+DiaryScreen.kt
+AiConsultantScreen.kt
+Since the parent AppShell component already correctly handles system bar padding globally through its underlying Scaffold's contentWindowInsets, instructing the internal TopAppBars to default their WindowInsets to zero pixels allows them to safely render flush against the status bar with standard spacing.
+
+I ran ./gradlew ktlintFormat assembleDebug and the build passed perfectly. The TopAppBars will now look flush and properly aligned as intended.
+
+**Did the AI get the cause right?** Yes
+
+---
+
+### #p13 Search bar appearance
+
+- Tool: Antigravity
+- Date: 2026-06-11
+
+**Prompt:**
+
+The location search bar on the Heatmap screen looks like a generic input field. Replace it with a Material 3 styled search bar:
+
+Use Material 3 SearchBar or DockedSearchBar composable — this gives the modern pill-shaped appearance consistent with Google Maps style
+Position it at the top of the map with horizontal padding 16dp and top padding 8dp, floating above the map surface
+Give it a subtle elevation/shadow so it visually separates from the map below
+Placeholder text: "Search location…" using the ellipsis character, not three dots
+On query submission move the map camera to the searched location — keep whatever location resolution logic already exists
+Only change the search bar composable in HeatmapScreen. Do not touch ViewModel or repository logic.
+
+assembleDebug must stay green.
+
+**Identified cause:** cause included in the prompt
+**Fix:** The location search bar on the Heatmap screen has been successfully upgraded!
+
+I replaced the generic TextField with the native Material 3 DockedSearchBar. This correctly achieves the modern, pill-shaped aesthetic out-of-the-box (including the subtle default elevation shadow so it pops cleanly off the map). It is precisely aligned to the TopCenter of the map using the 16.dp horizontal and 8.dp top padding you specified. The placeholder uses the proper ellipsis character "Search location…" and the query submission invokes the pre-existing map camera zoom resolution logic.
+
+The build compiled successfully (assembleDebug stayed green). Let me know if there's anything else you'd like to adjust!
+
+**Did the AI get the cause right?** Yes
+
+---
+
+### #p14 Map zone selection not working
+
+- Tool: Antigravity
+- Date: 2026-06-11
+
+**Prompt:**
+The Heatmap screen has two broken interaction flows that need fixing:
+
+Map tap to select zone: Add an onMapClick listener to the Google Maps composable. When the user taps a location on the map, find the nearest NoiseZone from HeatmapUiState.noiseZones by comparing geohash or straight-line distance to the tap coordinates. Call viewModel.onZoneSelected(zone) with the nearest zone. Place a Marker at the tapped location. If no zone is within a reasonable radius (0.5km), show a snackbar "No noise data for this area yet"
+Search result selection: After the user submits a search query and the camera moves to the location, also trigger the same zone lookup for that coordinate — find the nearest zone and call viewModel.onZoneSelected(zone) if one exists nearby
+The ZoneInsightsBottomSheet should expand when a zone is selected and collapse when the map is tapped with no nearby zone
+The selected location pin should use a distinct marker color or custom icon to differentiate it from heatmap overlay points
+
+Only change HeatmapScreen.kt and HeatmapViewModel.kt. Do not touch repositories.
+assembleDebug must stay green.
+
+**Identified cause:** cause included in the prompt
+**Fix:** The map interactions on the Heatmap screen are fully implemented and verified!
+
+I have updated the UI and ViewModel states to properly handle these interactions:
+
+Map Taps & Search Handling: Both tapping the map and executing a search now run a straight-line distanceBetween resolution to dynamically find the nearest NoiseZone (within a 500m radius).
+Dynamic UI Feedback:
+When a valid zone is found, the ZoneInsightsBottomSheet expands automatically to reveal the analytics.
+When no zone is nearby, it smartly collapses and surfaces a Snackbar reading "No noise data for this area yet".
+Distinct Selection Pin: I decoupled the selection coordinate tracking (tappedLocation) and colored its pin an Azure blue, so it visually stands apart from the standard red pins and heatmap tiles.
+State Management: The UI and HeatmapViewModel stay in perfect sync using a new ZoneSelected action, keeping everything reactive and robust.
+I verified everything by running a clean ./gradlew ktlintFormat assembleDebug, which passed successfully! The location search bar on the Heatmap screen has been successfully upgraded!
+
+**Did the AI get the cause right?** Yes
+
+---
+
+### #p15 Decibel readings too high
+
+- Tool: Antigravity
+- Date: 2026-06-11
+
+**Prompt:**
+The decibel readings in AudioCaptureRepositoryImpl are incorrectly high (60–100dB in silent environments). The issue is in the amplitude-to-dB conversion. Fix the calculation:
+
+Read a full buffer of PCM samples using AudioRecord.read(buffer, 0, bufferSize)
+Calculate the RMS (Root Mean Square) across the entire buffer: sqrt(sum(sample^2) / bufferSize) where each sample is the raw PCM value
+Normalise the RMS against the maximum possible value for 16-bit audio (32767.0): normalizedRms = rms / 32767.0
+Apply the dB formula to the normalised value: db = 20 * log10(normalizedRms)
+Add a floor guard: if normalizedRms <= 0.0001 return 0.0 to avoid negative infinity or extreme negative values
+The result should produce readings closer to: near-silence ~20–30dB, normal conversation ~50–60dB, loud environment ~70–85dB
+Only change AudioCaptureRepositoryImpl. Do not touch ViewModel or UI.
+
+assembleDebug must stay green.
+
+
+**Identified cause:** cause included in the prompt
+**Fix:** The map interactions on the Heatmap screen are fully implemented and verified!
+
+**Did the AI get the cause right?** Yes
+
 
 <!-- new entries below -->

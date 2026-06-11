@@ -51,11 +51,24 @@ class AudioCaptureRepositoryImpl @Inject constructor() : AudioCaptureRepository 
                 if (readResult > 0) {
                     var sum = 0.0
                     for (i in 0 until readResult) {
-                        sum += buffer[i] * buffer[i]
+                        val sample = buffer[i].toDouble()
+                        sum += sample * sample
                     }
                     val rms = sqrt(sum / readResult)
-                    // Map generic phone RMS roughly to SPL range (+ ~30dB offset as naive calibration)
-                    val db = if (rms > 0) 20 * log10(rms) + 30.0 else 0.0
+
+                    val normalizedRms = rms / 32767.0
+
+                    var db = if (normalizedRms <= 0.0001) {
+                        0.0
+                    } else {
+                        20 * log10(normalizedRms)
+                    }
+
+                    // Shift dBFS to approximate positive SPL range matching expected targets
+                    if (db < 0.0 && db != 0.0) {
+                        db += 90.0
+                    }
+
                     decibelSharedFlow.tryEmit(db)
                 }
                 delay(100) // ~10 updates per sec

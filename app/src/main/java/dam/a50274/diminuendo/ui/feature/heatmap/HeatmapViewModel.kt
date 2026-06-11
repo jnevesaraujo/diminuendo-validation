@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dam.a50274.diminuendo.domain.model.NoiseZone
 import dam.a50274.diminuendo.domain.repository.LocationRepository
 import dam.a50274.diminuendo.domain.repository.NoiseZoneRepository
 import dam.a50274.diminuendo.domain.usecase.CheckEntitlementUseCase
@@ -32,6 +33,7 @@ sealed class HeatmapAction {
     object BusyHoursClicked : HeatmapAction()
     data class SearchLocation(val query: String) : HeatmapAction()
     object ConsumeSearch : HeatmapAction()
+    data class ZoneSelected(val zone: NoiseZone?, val location: LatLng?) : HeatmapAction()
 }
 
 @HiltViewModel
@@ -48,6 +50,8 @@ class HeatmapViewModel @Inject constructor(
 
     private val userInitialLocation = MutableStateFlow<LatLng?>(null)
     private val searchLocation = MutableStateFlow<LatLng?>(null)
+    private val selectedZone = MutableStateFlow<NoiseZone?>(null)
+    private val tappedLocation = MutableStateFlow<LatLng?>(null)
 
     init {
         viewModelScope.launch {
@@ -64,16 +68,26 @@ class HeatmapViewModel @Inject constructor(
         checkEntitlementUseCase.isPremium,
         userInitialLocation,
         searchLocation,
-    ) { zones, isOnline, isPremium, initialLocation, searchLoc ->
+        selectedZone,
+        tappedLocation,
+    ) { params ->
+        val zones = params[0] as List<NoiseZone>
+        val isOnline = params[1] as Boolean
+        val isPremium = params[2] as Boolean
+        val initialLocation = params[3] as LatLng?
+        val searchLoc = params[4] as LatLng?
+        val selZone = params[5] as NoiseZone?
+        val tapLoc = params[6] as LatLng?
         HeatmapUiState(
             isLoading = false,
             noiseZones = zones,
-            selectedZoneDetails = zones.firstOrNull(),
+            selectedZoneDetails = selZone,
             isOffline = !isOnline,
             isPremium = isPremium,
             error = null,
             userInitialLocation = initialLocation,
             searchLocationResult = searchLoc,
+            tappedLocation = tapLoc,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -109,6 +123,10 @@ class HeatmapViewModel @Inject constructor(
             }
             is HeatmapAction.ConsumeSearch -> {
                 searchLocation.value = null
+            }
+            is HeatmapAction.ZoneSelected -> {
+                selectedZone.value = action.zone
+                tappedLocation.value = action.location
             }
         }
     }
