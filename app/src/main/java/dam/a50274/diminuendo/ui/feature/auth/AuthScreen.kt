@@ -29,9 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dam.a50274.diminuendo.R
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun AuthScreenRoot(onNavigateToHome: () -> Unit, viewModel: AuthViewModel = hiltViewModel()) {
@@ -105,14 +102,30 @@ fun AuthScreen(state: AuthUiState, onAction: (AuthAction) -> Unit) {
                 onClick = { onAction(AuthAction.Submit) },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(if (state.isLoginMode) stringResource(R.string.auth_sign_in) else stringResource(R.string.auth_register))
+                Text(
+                    if (state.isLoginMode) {
+                        stringResource(
+                            R.string.auth_sign_in,
+                        )
+                    } else {
+                        stringResource(R.string.auth_register)
+                    },
+                )
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(onClick = { onAction(AuthAction.ToggleMode) }) {
-            Text(if (state.isLoginMode) stringResource(R.string.auth_toggle_register) else stringResource(R.string.auth_toggle_sign_in))
+            Text(
+                if (state.isLoginMode) {
+                    stringResource(
+                        R.string.auth_toggle_register,
+                    )
+                } else {
+                    stringResource(R.string.auth_toggle_sign_in)
+                },
+            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
