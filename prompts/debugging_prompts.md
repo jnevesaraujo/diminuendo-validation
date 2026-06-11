@@ -214,4 +214,32 @@ actions/checkout@v4, actions/setup-java@v4, and android-actions/setup-android@v3
 
 **Did the AI get the cause right?** yes
 
+---
+
+### #p9 — Lint warnings
+
+- Tool: Antigravity
+- Date: 2026-06-10
+
+**Prompt:**
+
+Fix the following lint warnings in the project:
+
+TypographyEllipsis — replace literal ... strings in strings.xml with the proper ellipsis character …
+PluralsCandidate — convert the flagged string to a proper plurals resource
+UnusedResources — remove all unused resource files flagged by lint
+Update compileSdk and targetSdk to 35 if not already set, and update AGP to the latest stable version in build.gradle.kts
+
+Do not change any Kotlin source files or business logic. Run ./gradlew lintDebug after and confirm warning count is reduced. ./gradlew test must stay green.
+
+**Identified cause:** Git CI Failure, outdated node.js
+**Fix:** I've updated the .github/workflows/android.yml file to address the Node.js 20 deprecation warnings in the CI.
+
+Specifically, I've made the following changes:
+
+Added the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true environment variable globally to the workflow.
+Updated gradle/actions/setup-gradle from v3 to v4 (the latest version).
+actions/checkout@v4, actions/setup-java@v4, and android-actions/setup-android@v3 were already at their latest major versions, so I've left them as is.
+
+**Did the AI get the cause right?** yes
 <!-- new entries below -->
