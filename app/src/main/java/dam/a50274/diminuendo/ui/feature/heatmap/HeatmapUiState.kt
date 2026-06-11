@@ -1,5 +1,6 @@
 package dam.a50274.diminuendo.ui.feature.heatmap
 
+import com.google.android.gms.maps.model.LatLng
 import dam.a50274.diminuendo.domain.model.NoiseZone
 
 data class HeatmapUiState(
@@ -9,4 +10,5 @@ data class HeatmapUiState(
     val isOffline: Boolean = false,
     val isPremium: Boolean = false,
     val error: String? = null,
+    val userInitialLocation: LatLng? = null,
 )

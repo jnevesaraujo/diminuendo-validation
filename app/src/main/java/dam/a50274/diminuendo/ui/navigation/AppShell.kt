@@ -14,11 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dam.a50274.diminuendo.R
 
 @Composable
 fun AppShell(startDestination: Any = Auth) {
@@ -36,12 +37,12 @@ fun AppShell(startDestination: Any = Auth) {
             if (showBottomBar) {
                 NavigationBar {
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.Place, contentDescription = "Heatmap") },
-                        label = { Text("Heatmap") },
+                        icon = { Icon(Icons.Default.Place, contentDescription = stringResource(R.string.nav_heatmap)) },
+                        label = { Text(stringResource(R.string.nav_heatmap)) },
                         selected = currentDestination?.hierarchy?.any { it.hasRoute<Heatmap>() } == true,
                         onClick = {
                             navController.navigate(Heatmap) {
-                                popUpTo(navController.graph.findStartDestination().id) {
+                                popUpTo(Heatmap) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
@@ -50,12 +51,17 @@ fun AppShell(startDestination: Any = Auth) {
                         },
                     )
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.AddCircle, contentDescription = "Capture") },
-                        label = { Text("Capture") },
+                        icon = {
+                            Icon(
+                                Icons.Default.AddCircle,
+                                contentDescription = stringResource(R.string.nav_capture),
+                            )
+                        },
+                        label = { Text(stringResource(R.string.nav_capture)) },
                         selected = currentDestination?.hierarchy?.any { it.hasRoute<Capture>() } == true,
                         onClick = {
                             navController.navigate(Capture) {
-                                popUpTo(navController.graph.findStartDestination().id) {
+                                popUpTo(Heatmap) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
@@ -64,12 +70,17 @@ fun AppShell(startDestination: Any = Auth) {
                         },
                     )
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.DateRange, contentDescription = "Diary") },
-                        label = { Text("Diary") },
+                        icon = {
+                            Icon(
+                                Icons.Default.DateRange,
+                                contentDescription = stringResource(R.string.nav_diary),
+                            )
+                        },
+                        label = { Text(stringResource(R.string.nav_diary)) },
                         selected = currentDestination?.hierarchy?.any { it.hasRoute<Diary>() } == true,
                         onClick = {
                             navController.navigate(Diary) {
-                                popUpTo(navController.graph.findStartDestination().id) {
+                                popUpTo(Heatmap) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
@@ -78,12 +89,17 @@ fun AppShell(startDestination: Any = Auth) {
                         },
                     )
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.Face, contentDescription = "AI Consultant") },
-                        label = { Text("AI") },
+                        icon = {
+                            Icon(
+                                Icons.Default.Face,
+                                contentDescription = stringResource(R.string.nav_ai_consultant),
+                            )
+                        },
+                        label = { Text(stringResource(R.string.nav_ai)) },
                         selected = currentDestination?.hierarchy?.any { it.hasRoute<AiConsultant>() } == true,
                         onClick = {
                             navController.navigate(AiConsultant) {
-                                popUpTo(navController.graph.findStartDestination().id) {
+                                popUpTo(Heatmap) {
                                     saveState = true
                                 }
                                 launchSingleTop = true

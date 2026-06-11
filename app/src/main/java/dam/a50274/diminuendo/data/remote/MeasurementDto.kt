@@ -6,8 +6,8 @@ data class MeasurementDto(
     val dbLevel: Double = 0.0,
     val waveform: List<Int> = emptyList(),
     val timestamp: Long = 0L,
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
     val contextTag: String = "",
     val locationName: String = "",
 )

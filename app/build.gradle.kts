@@ -32,7 +32,7 @@ android {
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "AI_API_KEY", "\"${secret("AI_API_KEY")}\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"${secret("GEMINI_API_KEY")}\"")
         buildConfigField("String", "MAPS_API_KEY", "\"${secret("MAPS_API_KEY")}\"")
         manifestPlaceholders["MAPS_API_KEY"] = secret("MAPS_API_KEY")
         buildConfigField(
@@ -109,12 +109,15 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.maps.compose.utils)
     implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+    implementation(libs.generativeai)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.room.testing)
+    testImplementation(libs.robolectric)
 
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

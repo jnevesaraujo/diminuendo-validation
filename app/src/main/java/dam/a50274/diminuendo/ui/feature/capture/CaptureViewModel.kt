@@ -7,13 +7,16 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dam.a50274.diminuendo.data.local.PreferencesKeys
 import dam.a50274.diminuendo.domain.model.Measurement
+import dam.a50274.diminuendo.domain.model.SyncException
 import dam.a50274.diminuendo.domain.repository.AudioCaptureRepository
+import dam.a50274.diminuendo.domain.repository.LocationRepository
 import dam.a50274.diminuendo.domain.usecase.SaveMeasurementUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -24,6 +27,7 @@ import kotlin.math.max
 class CaptureViewModel @Inject constructor(
     private val audioCaptureRepository: AudioCaptureRepository,
     private val saveMeasurementUseCase: SaveMeasurementUseCase,
+    private val locationRepository: LocationRepository,
     private val dataStore: DataStore<Preferences>,
 ) : ViewModel() {
 
@@ -125,24 +129,34 @@ class CaptureViewModel @Inject constructor(
         val maxDb = state.latestWaveform.maxOrNull()?.takeIf { it > 0 } ?: 1.0
         val normalizedWaveform = state.latestWaveform.map { (it / maxDb * 100).toInt() }.toIntArray()
 
-        val measurement = Measurement(
-            id = UUID.randomUUID().toString(),
-            userId = currentUserId.ifEmpty { "debug_user" },
-            dbLevel = state.averageDb,
-            waveform = normalizedWaveform,
-            timestamp = System.currentTimeMillis(),
-            // GPS omitted for MVP
-            latitude = 0.0,
-            longitude = 0.0,
-            contextTag = "Capture",
-            locationName = "Captured Location",
-        )
-
         viewModelScope.launch {
+            val location = locationRepository.getCurrentLocation().firstOrNull()
+
+            if (location == null) {
+                _uiState.update { it.copy(error = "Location unavailable, saving without coordinates") }
+            }
+
+            val measurement = Measurement(
+                id = UUID.randomUUID().toString(),
+                userId = currentUserId.ifEmpty { "debug_user" },
+                dbLevel = state.averageDb,
+                waveform = normalizedWaveform,
+                timestamp = System.currentTimeMillis(),
+                latitude = location?.latitude,
+                longitude = location?.longitude,
+                contextTag = "Capture",
+                locationName = "Captured Location",
+            )
+
             try {
                 saveMeasurementUseCase(measurement)
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "Failed to save measurement") }
+                val errorMsg = if (e is SyncException) {
+                    "Measurement saved locally but failed to sync: ${e.message}"
+                } else {
+                    e.message ?: "Failed to save measurement"
+                }
+                _uiState.update { it.copy(error = errorMsg) }
             }
         }
     }

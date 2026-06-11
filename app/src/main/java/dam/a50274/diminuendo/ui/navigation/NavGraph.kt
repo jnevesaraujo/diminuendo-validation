@@ -31,7 +31,9 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier,
             )
         }
         composable<Heatmap> {
-            HeatmapScreen()
+            HeatmapScreen(
+                onNavigateToPaywall = { navController.navigate(Paywall) },
+            )
         }
         composable<Capture>(
             deepLinks = listOf(
@@ -47,10 +49,14 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier,
             DiaryScreenRoot()
         }
         composable<AiConsultant> {
-            AiConsultantScreen()
+            AiConsultantScreen(
+                onNavigateToPaywall = { navController.navigate(Paywall) },
+            )
         }
         composable<Paywall> {
-            PaywallScreen()
+            PaywallScreen(
+                onNavigateBack = { navController.popBackStack() },
+            )
         }
     }
 }

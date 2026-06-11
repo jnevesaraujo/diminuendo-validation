@@ -25,9 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dam.a50274.diminuendo.R
 
 @Composable
 fun DiaryScreenRoot(viewModel: DiaryViewModel = hiltViewModel()) {
@@ -50,10 +54,13 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit) {
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(text = "Error: ${state.error}", color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = stringResource(R.string.diary_error_prefix, state.error),
+                        color = MaterialTheme.colorScheme.error,
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(onClick = { onAction(DiaryAction.Refresh) }) {
-                        Text("Retry")
+                        Text(stringResource(R.string.retry))
                     }
                 }
             }
@@ -62,31 +69,23 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit) {
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text("No measurements yet. Start capturing!")
-                    Spacer(modifier = Modifier.height(16.dp))
-                    // TODO: remove before final build
-                    Button(onClick = { onAction(DiaryAction.InsertDebugEntry) }) {
-                        Text("Insert Test Entry (Debug)")
-                    }
+                    Text(stringResource(R.string.diary_no_measurements))
                 }
             }
             else -> {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    // TODO: remove before final build
-                    Button(
-                        onClick = { onAction(DiaryAction.InsertDebugEntry) },
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp),
-                    ) {
-                        Text("Insert Test Entry (Debug)")
-                    }
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(state.measurements, key = { it.id }) { measurement ->
+                            val location = measurement.locationName ?: stringResource(R.string.diary_unknown_location)
+                            val itemDesc = "Measurement of ${measurement.dbLevel.toInt()} dB at $location"
                             Card(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .semantics { contentDescription = itemDesc },
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -101,12 +100,15 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit) {
                                             style = MaterialTheme.typography.titleLarge,
                                         )
                                         Text(
-                                            text = measurement.locationName ?: "Unknown Location",
+                                            text = location,
                                             style = MaterialTheme.typography.bodyMedium,
                                         )
                                     }
                                     IconButton(onClick = { onAction(DiaryAction.Delete(measurement.id)) }) {
-                                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = stringResource(R.string.diary_delete_desc),
+                                        )
                                     }
                                 }
                             }

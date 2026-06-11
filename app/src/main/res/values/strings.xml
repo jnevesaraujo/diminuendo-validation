@@ -5,4 +5,58 @@
     <string name="offline_banner">No connection — showing cached data</string>
     <string name="premium_badge">PREMIUM</string>
     <string name="empty_list">Nothing to show</string>
+
+    <!-- Navigation -->
+    <string name="nav_heatmap">Heatmap</string>
+    <string name="nav_capture">Capture</string>
+    <string name="nav_diary">Diary</string>
+    <string name="nav_ai">AI</string>
+    <string name="nav_ai_consultant">AI Consultant</string>
+
+    <!-- AuthScreen -->
+    <string name="auth_diminuendo">Diminuendo</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_register">Register</string>
+    <string name="auth_toggle_register">Don\'t have an account? Register</string>
+    <string name="auth_toggle_sign_in">Already have an account? Sign In</string>
+
+    <!-- HeatmapScreen -->
+    <string name="heatmap_busy_hours_premium">Busy Hours\n(Real data would go here)</string>
+    <string name="heatmap_busy_hours_free">Busy Hours\n(Select a zone to view details)</string>
+    <string name="heatmap_premium_required">🔒 Premium Required</string>
+    <string name="heatmap_map_desc">Noise Heatmap Map</string>
+
+    <!-- CaptureScreen -->
+    <string name="capture_stat_avg">Avg</string>
+    <string name="capture_stat_peak">Peak</string>
+    <string name="capture_stat_time">Time</string>
+    <string name="capture_permission_rationale">Microphone access is required to capture decibel levels. Location is requested to map your reading, but is optional.</string>
+    <string name="capture_btn_start">Start</string>
+    <string name="capture_btn_stop">Stop</string>
+    <string name="capture_btn_save">Save</string>
+    <string name="capture_gauge_desc">Circular decibel gauge</string>
+    <string name="capture_waveform_desc">Audio waveform visualization</string>
+
+    <!-- DiaryScreen -->
+    <string name="diary_error_prefix">Error: %s</string>
+    <string name="diary_no_measurements">No measurements yet. Start capturing!</string>
+    <string name="diary_unknown_location">Unknown Location</string>
+    <string name="diary_delete_desc">Delete</string>
+
+    <!-- AiConsultantScreen -->
+    <string name="ai_offline_error">The Gemini Advisor requires an active network channel.</string>
+    <string name="ai_ask_placeholder">Ask Diminuendo...</string>
+    <string name="ai_chip_route_safety">Route Safety</string>
+    <string name="ai_chip_loud_music">Loud Music</string>
+    <string name="ai_chip_85db">85dB Example</string>
+    <string name="ai_type_message">Type a message...</string>
+    <string name="ai_send_message_desc">Send Message</string>
+    <string name="ai_free_prompts_remaining">%1$d of %2$d free prompts remaining today.</string>
+
+    <!-- PaywallScreen -->
+    <string name="paywall_title">Diminuendo Premium</string>
+    <string name="paywall_description">Unlock \'Busy Hours\' analysis and unlimited AI consultant interactions.</string>
+    <string name="paywall_unlock_btn">Unlock Premium (Simulated)</string>
 </resources>

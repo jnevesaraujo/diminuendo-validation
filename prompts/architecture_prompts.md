@@ -112,7 +112,7 @@ What feature would you like to tackle next?
 
 ---
 
-### #p4 — M2, Firebase Auth
+### #p4 — M2 Firebase Auth
 
 - Tool: Antigravity
 - Date: 2026-06-10
@@ -160,7 +160,7 @@ I've documented the implementation specifics inside the walkthrough artifact! Le
 
 ---
 
-### #p5 — M4, Firestore heatmap
+### #p5 — M4 Firestore heatmap
 
 - Tool: Antigravity
 - Date: 2026-06-10
@@ -201,10 +201,98 @@ Heatmap User Interface: Structured HeatmapUiState and HeatmapViewModel, feeding 
 
 IMPORTANT: Make sure to add MAPS_API_KEY=your_google_maps_key_here into your root local.properties file! Without this, the maps frame will stay blank.
 
-I've documented the implementation specifics inside the 
-walkthrough
- artifact. Would you like to build out the AI Consultant pipeline next, or focus on the Paywall integration?
+I've documented the implementation specifics inside the walkthrough artifact. Would you like to build out the AI Consultant pipeline next, or focus on the Paywall integration?
 
-**Assessment:**
+**Assessment:** Edited
+
+---
+
+### #p5 — M5 freemium layer
+
+- Tool: Antigravity
+- Date: 2026-06-10
+- Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
+
+**Prompt:**
+Using docs/06_architecture.md, docs/08_state_management.md, docs/02_requirements.md, and docs/05_navigation.md, implement the simulated freemium subscription layer:
+
+CheckEntitlementUseCase in domain/usecase/ — reads is_premium Boolean from DataStore and exposes it as Flow<Boolean>. This is the single gate for all premium checks, no other class reads is_premium directly
+SubscriptionRepository interface in domain/repository/ with setPremium(value: Boolean) and isPremium(): Flow<Boolean>. Implementation in data/ writes to DataStore only
+Wire CheckEntitlementUseCase into HeatmapViewModel — when isPremium is false and the user taps the Busy Hours bar chart area in ZoneInsightsBottomSheet, emit a one-shot navigation event to paywall route
+Wire CheckEntitlementUseCase into AiViewModel — enforce the 3-prompt daily limit using ai_daily_count and ai_count_reset_date from DataStore. On each prompt: check date, reset counter if new day, increment counter, block and navigate to paywall if count reaches 3 and user is not premium
+PaywallScreen composable with an "Unlock Premium (Simulated)" button that calls setPremium(true) and navigates back. Once unlocked, all paywalled features become accessible permanently across app restarts
+Busy Hours bar chart in ZoneInsightsBottomSheet — visible but blurred/locked for free users with a premium badge overlay, fully rendered for premium users using NoiseZone.hourlyAverages data
+
+Rules: UI composables check isPremium from ViewModel state only — they never call CheckEntitlementUseCase directly. Premium state must persist across app restarts via DataStore per RN-02. assembleDebug must stay green.
+
+**Result:**
+The Gradle background build successfully finished with no errors!
+
+The 
+walkthrough
+ artifact has been updated with the summary of all the components that are now fully integrated and functioning.
+
+The Simulated Freemium layer is totally complete. You now have a solid DataStore driven gating mechanism protecting the Heatmap and AI features.
+
+**Assessment:** Edited
+
+---
+
+### #p5 — M5 freemium layer
+
+- Tool: Antigravity
+- Date: 2026-06-10
+- Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
+
+**Prompt:**
+Using docs/11_testing_strategy.md, implement the required test suite:
+
+CheckEntitlementUseCaseTest in app/src/test/ — unit test with a FakeSubscriptionRepository. Test cases:
+
+isPremium_whenFalse_returnsFreeTier
+isPremium_whenTrue_returnsPremiumTier
+aiDailyLimit_whenCountBelow3_allowsPrompt
+aiDailyLimit_whenCountEquals3_blocksPrompt
+aiDailyLimit_whenNewDay_resetsCounter
+
+HeatmapViewModelTest in app/src/test/ — unit test with a FakeNoiseZoneRepository and FakeConnectivityObserver. Test cases:
+
+init_whenRepositoryEmitsZones_setsContentState
+init_whenOffline_setsOfflineFlag
+init_whenRepositoryThrows_setsErrorState
+selectZone_whenUserIsFree_emitsPaywallEvent
+selectZone_whenUserIsPremium_setsSelectedZone
+
+MeasurementMapperTest — unit test validating bidirectional mapping:
+
+measurementEntity_toDomain_mapsAllFieldsCorrectly
+measurement_toEntity_preservesPendingSyncFlag
+
+MeasurementRepositoryImplTest — unit test with in-memory Room database and FakeFirestoreDataSource:
+
+saveMeasurement_whenOnline_writesBothRoomAndFirestore
+saveMeasurement_whenOffline_writesRoomOnlyWithPendingSyncTrue
+getPendingSync_afterOfflineSave_returnsQueuedEntry
+
+Rules: use MainDispatcherRule with UnconfinedTestDispatcher in all ViewModel tests. Use Fakes over MockK where testing interface-driven layers. Naming convention strictly methodName_condition_expectedResult. All tests must pass with ./gradlew test. Do not modify any production code to make tests pass — if a test requires a production change, flag it explicitly.
+
+**Result:**
+
+The tests have finally completed successfully and passed with flying colors!
+
+I have resolved the TimeoutCancellationException that was occurring within MeasurementRepositoryImplTest. The problem stemmed from a complex interaction between MockK, Robolectric's virtual time clock runTest, and the await() suspend function within kotlinx-coroutines-play-services.
+
+Because await() effectively blocks the execution loop waiting for an asynchronous callback from a generic Task, we couldn't properly mock it under runTest without introducing deadlocks. The cleanest and most reliable way to avoid the test hanging, while keeping the specific Firestore mock structure correct, was to replace runTest { ... } with runBlocking { ... } in the relevant methods. This sidesteps the virtual time delays and processes the continuation immediately!
+
+I also ran ./gradlew ktlintCheck, which initially returned a few style errors regarding missing trailing commas and out-of-order imports. I resolved those using the ./gradlew ktlintFormat command.
+
+Everything currently complies completely with your Definition of Done:
+
+Code compiles successfully.
+100% of the tests pass.
+Linting passes successfully with ktlint.
+Production code was explicitly untouched and any discrepancies matching the instructions were flagged heavily with // FLAG: comments inline.
+
+**Assessment:** Accepted
 
 <!-- new entries below -->

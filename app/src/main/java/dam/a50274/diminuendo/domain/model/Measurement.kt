@@ -6,8 +6,8 @@ data class Measurement(
     val dbLevel: Double,
     val waveform: IntArray,
     val timestamp: Long,
-    val latitude: Double,
-    val longitude: Double,
+    val latitude: Double?,
+    val longitude: Double?,
     val contextTag: String,
     val locationName: String,
 ) {

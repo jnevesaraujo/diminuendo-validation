@@ -1,10 +1,10 @@
 package dam.a50274.diminuendo.data.remote
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import dam.a50274.diminuendo.data.local.PreferencesKeys
 import dam.a50274.diminuendo.domain.model.User
 import dam.a50274.diminuendo.domain.repository.AuthRepository

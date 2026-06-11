@@ -31,10 +31,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dam.a50274.diminuendo.R
 
 @Composable
 fun CaptureScreenRoot(viewModel: CaptureViewModel = hiltViewModel()) {
@@ -51,9 +55,15 @@ fun CaptureScreen(state: CaptureUiState, onAction: (CaptureAction) -> Unit) {
     var showPermissionRationale by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-    ) { isGranted ->
-        if (isGranted) {
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+    ) { permissions ->
+        val audioGranted = permissions[Manifest.permission.RECORD_AUDIO] ?: (
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.RECORD_AUDIO,
+            ) == PackageManager.PERMISSION_GRANTED
+            )
+        if (audioGranted) {
             onAction(CaptureAction.ToggleRecording)
         } else {
             showPermissionRationale = true
@@ -70,9 +80,9 @@ fun CaptureScreen(state: CaptureUiState, onAction: (CaptureAction) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            StatItem(label = "Avg", value = "${state.averageDb.toInt()} dB")
-            StatItem(label = "Peak", value = "${state.peakDb.toInt()} dB")
-            StatItem(label = "Time", value = "${state.elapsedSeconds}s")
+            StatItem(label = stringResource(R.string.capture_stat_avg), value = "${state.averageDb.toInt()} dB")
+            StatItem(label = stringResource(R.string.capture_stat_peak), value = "${state.peakDb.toInt()} dB")
+            StatItem(label = stringResource(R.string.capture_stat_time), value = "${state.elapsedSeconds}s")
         }
 
         // Center: Circular Gauge
@@ -80,7 +90,11 @@ fun CaptureScreen(state: CaptureUiState, onAction: (CaptureAction) -> Unit) {
             modifier = Modifier.size(250.dp),
             contentAlignment = Alignment.Center,
         ) {
-            CircularDbGauge(currentDb = state.currentDb)
+            val gaugeDesc = stringResource(R.string.capture_gauge_desc)
+            CircularDbGauge(
+                currentDb = state.currentDb,
+                modifier = Modifier.semantics { contentDescription = gaugeDesc },
+            )
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "${state.currentDb.toInt()}",
@@ -96,9 +110,13 @@ fun CaptureScreen(state: CaptureUiState, onAction: (CaptureAction) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (state.latestWaveform.isNotEmpty()) {
+                val waveformDesc = stringResource(R.string.capture_waveform_desc)
                 WaveformVisualizer(
                     waveform = state.latestWaveform,
-                    modifier = Modifier.fillMaxWidth().height(60.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .semantics { contentDescription = waveformDesc },
                 )
             } else {
                 Spacer(modifier = Modifier.height(60.dp))
@@ -108,7 +126,15 @@ fun CaptureScreen(state: CaptureUiState, onAction: (CaptureAction) -> Unit) {
 
             if (showPermissionRationale) {
                 Text(
-                    text = "Microphone access is required to capture decibel levels.",
+                    text = stringResource(R.string.capture_permission_rationale),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            }
+            if (state.error != null) {
+                Text(
+                    text = state.error,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(bottom = 8.dp),
@@ -123,16 +149,26 @@ fun CaptureScreen(state: CaptureUiState, onAction: (CaptureAction) -> Unit) {
                         if (state.isRecording) {
                             onAction(CaptureAction.ToggleRecording)
                         } else {
-                            val isGranted = ContextCompat.checkSelfPermission(
+                            val audioGranted = ContextCompat.checkSelfPermission(
                                 context,
                                 Manifest.permission.RECORD_AUDIO,
                             ) == PackageManager.PERMISSION_GRANTED
 
-                            if (isGranted) {
+                            val locationGranted = ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                            ) == PackageManager.PERMISSION_GRANTED
+
+                            if (audioGranted && locationGranted) {
                                 showPermissionRationale = false
                                 onAction(CaptureAction.ToggleRecording)
                             } else {
-                                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                permissionLauncher.launch(
+                                    arrayOf(
+                                        Manifest.permission.RECORD_AUDIO,
+                                        Manifest.permission.ACCESS_FINE_LOCATION,
+                                    ),
+                                )
                             }
                         }
                     },
@@ -146,7 +182,15 @@ fun CaptureScreen(state: CaptureUiState, onAction: (CaptureAction) -> Unit) {
                         },
                     ),
                 ) {
-                    Text(if (state.isRecording) "Stop" else "Start")
+                    Text(
+                        if (state.isRecording) {
+                            stringResource(
+                                R.string.capture_btn_stop,
+                            )
+                        } else {
+                            stringResource(R.string.capture_btn_start)
+                        },
+                    )
                 }
 
                 if (state.averageDb > 0 && !state.isRecording) {
@@ -154,7 +198,7 @@ fun CaptureScreen(state: CaptureUiState, onAction: (CaptureAction) -> Unit) {
                         onClick = { onAction(CaptureAction.SaveMeasurement) },
                         modifier = Modifier.height(80.dp),
                     ) {
-                        Text("Save")
+                        Text(stringResource(R.string.capture_btn_save))
                     }
                 }
             }

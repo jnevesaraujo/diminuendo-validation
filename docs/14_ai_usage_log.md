@@ -16,7 +16,10 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 | 2026-06-10 | Antigravity | M3 mock user | `architecture_prompts.md#p2` | Hardcoded mock userId for local testing before Firebase Auth | Accepted | Temporary; will be replaced in M2 with real Firebase Auth uid |
 | 2026-06-10 | Antigravity | M2 Firebase Auth | `architecture_prompts.md#p3` | Created classes for Firebase Auth | Edited | Included debug prompt |
 | 2026-06-09 | Antigravity | Debug Firebase Auth | `debugging_prompts.md#p2` | Missed some requirements | Accepted | Completed debug prompt |
-| 2026-06-10 | Antigravity | M4 Firestore heatmap — NoiseZone sync, HeatmapViewModel, Maps overlay | `architecture_prompts.md#p5` | Firestore snapshot listener, Room SSOT, heatmap overlay, weighted average update | Accepted / Edited | <fill in any adjustments you made> |
+| 2026-06-10 | Antigravity | M4 Firestore heatmap | `architecture_prompts.md#p5` | Firestore snapshot listener, Room SSOT, heatmap overlay, weighted average update | Edited | Included Debug prompt |
+| 2026-06-09 | Antigravity | Debug Firestore heatmap | `debugging_prompts.md#p3&p4&p5&p6` | Missed some requirements | Accepted | Completed debug prompt |
+| 2026-06-10 | Antigravity | M5 paywall | architecture_prompts.md#p7 | Paywall and Busy Hours working. Gemini daily limit not wired — AiViewModel was a stub. Location never implemented in capture pipeline | Edited | Two follow-up prompts required: location fix and Gemini implementation |
+| 2026-06-11 | Antigravity | M7 test suite — CheckEntitlementUseCase, HeatmapViewModel, MeasurementMapper, MeasurementRepository | architecture_prompts.md#p9 | All test cases generated, ./gradlew test green | Accepted / Edited | <note anything the agent got wrong or any production code it changed> |
 | | | | | | | |
 
 ## AI errors / hallucinations detected

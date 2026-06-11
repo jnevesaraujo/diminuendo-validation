@@ -41,7 +41,7 @@ fun Measurement.toEntity(
 fun dam.a50274.diminuendo.data.remote.MeasurementDto.toEntity(
     pendingSync: Boolean = false,
     isDeleted: Boolean = false,
-    updatedAt: Long = System.currentTimeMillis()
+    updatedAt: Long = System.currentTimeMillis(),
 ): MeasurementEntity {
     return MeasurementEntity(
         id = this.id,
@@ -55,7 +55,7 @@ fun dam.a50274.diminuendo.data.remote.MeasurementDto.toEntity(
         locationName = this.locationName,
         updatedAt = updatedAt,
         pendingSync = pendingSync,
-        isDeleted = isDeleted
+        isDeleted = isDeleted,
     )
 }
 
@@ -69,6 +69,6 @@ fun Measurement.toDto(): dam.a50274.diminuendo.data.remote.MeasurementDto {
         latitude = this.latitude,
         longitude = this.longitude,
         contextTag = this.contextTag,
-        locationName = this.locationName
+        locationName = this.locationName,
     )
 }

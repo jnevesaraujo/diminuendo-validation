@@ -22,17 +22,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dam.a50274.diminuendo.R
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun AuthScreenRoot(
-    onNavigateToHome: () -> Unit,
-    viewModel: AuthViewModel = hiltViewModel()
-) {
+fun AuthScreenRoot(onNavigateToHome: () -> Unit, viewModel: AuthViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(viewModel) {
@@ -45,15 +47,12 @@ fun AuthScreenRoot(
 
     AuthScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
     )
 }
 
 @Composable
-fun AuthScreen(
-    state: AuthUiState,
-    onAction: (AuthAction) -> Unit
-) {
+fun AuthScreen(state: AuthUiState, onAction: (AuthAction) -> Unit) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.error) {
@@ -68,12 +67,12 @@ fun AuthScreen(
             .fillMaxSize()
             .padding(24.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Diminuendo",
+            text = stringResource(R.string.auth_diminuendo),
             style = MaterialTheme.typography.displayMedium,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -81,9 +80,9 @@ fun AuthScreen(
         OutlinedTextField(
             value = state.email,
             onValueChange = { onAction(AuthAction.UpdateEmail(it)) },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.auth_email)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -91,10 +90,10 @@ fun AuthScreen(
         OutlinedTextField(
             value = state.password,
             onValueChange = { onAction(AuthAction.UpdatePassword(it)) },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.auth_password)) },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -104,27 +103,19 @@ fun AuthScreen(
         } else {
             Button(
                 onClick = { onAction(AuthAction.Submit) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(if (state.isLoginMode) "Sign In" else "Register")
+                Text(if (state.isLoginMode) stringResource(R.string.auth_sign_in) else stringResource(R.string.auth_register))
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(onClick = { onAction(AuthAction.ToggleMode) }) {
-            Text(if (state.isLoginMode) "Don't have an account? Register" else "Already have an account? Sign In")
+            Text(if (state.isLoginMode) stringResource(R.string.auth_toggle_register) else stringResource(R.string.auth_toggle_sign_in))
         }
 
         Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = { /* TODO: Google OAuth stub */ },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = false
-        ) {
-            Text("Sign in with Google (Stub)")
-        }
 
         SnackbarHost(hostState = snackbarHostState)
     }
