@@ -1,10 +1,6 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">DIMINUENDO</string>
-    <string name="sample_title">Items (example)</string>
     <string name="retry">Try again</string>
-    <string name="offline_banner">No connection — showing cached data</string>
-    <string name="premium_badge">PREMIUM</string>
-    <string name="empty_list">Nothing to show</string>
 
     <!-- Navigation -->
     <string name="nav_heatmap">Heatmap</string>
@@ -47,13 +43,17 @@
 
     <!-- AiConsultantScreen -->
     <string name="ai_offline_error">The Gemini Advisor requires an active network channel.</string>
-    <string name="ai_ask_placeholder">Ask Diminuendo...</string>
+    <string name="ai_ask_placeholder">Ask Diminuendo…</string>
     <string name="ai_chip_route_safety">Route Safety</string>
     <string name="ai_chip_loud_music">Loud Music</string>
     <string name="ai_chip_85db">85dB Example</string>
-    <string name="ai_type_message">Type a message...</string>
+    <string name="ai_type_message">Type a message…</string>
     <string name="ai_send_message_desc">Send Message</string>
-    <string name="ai_free_prompts_remaining">%1$d of %2$d free prompts remaining today.</string>
+    <string name="ai_free_prompts_remaining" tools:ignore="PluralsCandidate">%1$d of %2$d free prompts remaining today.</string>
+    <plurals name="ai_free_prompts_remaining">
+        <item quantity="one">%1$d of %2$d free prompt remaining today.</item>
+        <item quantity="other">%1$d of %2$d free prompts remaining today.</item>
+    </plurals>
 
     <!-- PaywallScreen -->
     <string name="paywall_title">Diminuendo Premium</string>

@@ -185,4 +185,33 @@ Everything related to the Gemini AI Consultant Feature is fully completed and bu
 
 **Did the AI get the cause right?** yes
 
+---
+
+### #p9 — CI failure
+
+- Tool: Antigravity
+- Date: 2026-06-10
+
+**Prompt:**
+
+The GitHub Actions CI workflow is failing due to Node.js 20 deprecation. Update .github/workflows/ CI yaml file to use the latest versions of all actions and add FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true as an environment variable. Specifically update:
+
+actions/checkout@v4 to actions/checkout@v4 (check latest)
+actions/setup-java@v4 to latest
+android-actions/setup-android@v3 to latest
+gradle/actions/setup-gradle@v3 to latest
+
+Do not change any build logic. The goal is a green CI run.
+
+**Identified cause:** Git CI Failure, outdated node.js
+**Fix:** I've updated the .github/workflows/android.yml file to address the Node.js 20 deprecation warnings in the CI.
+
+Specifically, I've made the following changes:
+
+Added the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true environment variable globally to the workflow.
+Updated gradle/actions/setup-gradle from v3 to v4 (the latest version).
+actions/checkout@v4, actions/setup-java@v4, and android-actions/setup-android@v3 were already at their latest major versions, so I've left them as is.
+
+**Did the AI get the cause right?** yes
+
 <!-- new entries below -->

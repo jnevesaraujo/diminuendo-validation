@@ -17,9 +17,11 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 | 2026-06-10 | Antigravity | M2 Firebase Auth | `architecture_prompts.md#p3` | Created classes for Firebase Auth | Edited | Included debug prompt |
 | 2026-06-09 | Antigravity | Debug Firebase Auth | `debugging_prompts.md#p2` | Missed some requirements | Accepted | Completed debug prompt |
 | 2026-06-10 | Antigravity | M4 Firestore heatmap | `architecture_prompts.md#p5` | Firestore snapshot listener, Room SSOT, heatmap overlay, weighted average update | Edited | Included Debug prompt |
-| 2026-06-09 | Antigravity | Debug Firestore heatmap | `debugging_prompts.md#p3&p4&p5&p6` | Missed some requirements | Accepted | Completed debug prompt |
-| 2026-06-10 | Antigravity | M5 paywall | architecture_prompts.md#p7 | Paywall and Busy Hours working. Gemini daily limit not wired — AiViewModel was a stub. Location never implemented in capture pipeline | Edited | Two follow-up prompts required: location fix and Gemini implementation |
-| 2026-06-11 | Antigravity | M7 test suite — CheckEntitlementUseCase, HeatmapViewModel, MeasurementMapper, MeasurementRepository | architecture_prompts.md#p9 | All test cases generated, ./gradlew test green | Accepted / Edited | <note anything the agent got wrong or any production code it changed> |
+| 2026-06-09 | Antigravity | Debug Firestore heatmap | `debugging_prompts.md#p3&p4&p5&p6&p7` | Missed some requirements | Accepted | Completed debug prompt |
+| 2026-06-10 | Antigravity | M5 paywall | `architecture_prompts.md#p8` | Paywall and Busy Hours working. Gemini daily limit not wired — AiViewModel was a stub. Location never implemented in capture pipeline | Edited | Two follow-up prompts required: location fix and Gemini implementation |
+| 2026-06-11 | Antigravity | M7 test suite — CheckEntitlementUseCase, HeatmapViewModel, MeasurementMapper, MeasurementRepository | `architecture_prompts.md#p9` | All test cases generated, ./gradlew test green | Edited | Added debug prompt |
+| 2026-06-11 | Antigravity | CI fix | `debugging_prompts.md#p9&p10` | CI Node.js update, lint reduction | Accepted | <fill after> |
+| 2026-06-11 | Antigravity | UI polish pass + Profile screen | `compose_prompts.md#p4` | Layout fixes, TopAppBar, Profile screen | Accepted | <fill after> |
 | | | | | | | |
 
 ## AI errors / hallucinations detected
