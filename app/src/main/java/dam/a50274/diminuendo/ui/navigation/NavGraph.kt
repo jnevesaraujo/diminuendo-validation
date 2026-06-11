@@ -13,6 +13,7 @@ import dam.a50274.diminuendo.ui.feature.capture.CaptureScreenRoot
 import dam.a50274.diminuendo.ui.feature.diary.DiaryScreenRoot
 import dam.a50274.diminuendo.ui.feature.heatmap.HeatmapScreen
 import dam.a50274.diminuendo.ui.feature.paywall.PaywallScreen
+import dam.a50274.diminuendo.ui.feature.profile.ProfileScreenRoot
 
 @Composable
 fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier, startDestination: Any = Auth) {
@@ -33,6 +34,7 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier,
         composable<Heatmap> {
             HeatmapScreen(
                 onNavigateToPaywall = { navController.navigate(Paywall) },
+                onNavigateToProfile = { navController.navigate(Profile) },
             )
         }
         composable<Capture>(
@@ -43,18 +45,35 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier,
                 },
             ),
         ) {
-            CaptureScreenRoot()
+            CaptureScreenRoot(
+                onNavigateToProfile = { navController.navigate(Profile) },
+                onNavigateToDiary = {
+                    navController.navigate(Diary) {
+                        popUpTo(Heatmap) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+            )
         }
         composable<Diary> {
-            DiaryScreenRoot()
+            DiaryScreenRoot(
+                onNavigateToProfile = { navController.navigate(Profile) },
+            )
         }
         composable<AiConsultant> {
             AiConsultantScreen(
                 onNavigateToPaywall = { navController.navigate(Paywall) },
+                onNavigateToProfile = { navController.navigate(Profile) },
             )
         }
         composable<Paywall> {
             PaywallScreen(
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Profile> {
+            ProfileScreenRoot(
                 onNavigateBack = { navController.popBackStack() },
             )
         }

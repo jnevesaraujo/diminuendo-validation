@@ -1,13 +1,17 @@
 package dam.a50274.diminuendo.ui.feature.heatmap
 
+import android.content.Context
+import android.location.Geocoder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dam.a50274.diminuendo.domain.repository.LocationRepository
 import dam.a50274.diminuendo.domain.repository.NoiseZoneRepository
 import dam.a50274.diminuendo.domain.usecase.CheckEntitlementUseCase
 import dam.a50274.diminuendo.domain.util.NetworkMonitor
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,6 +21,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 sealed class HeatmapEvent {
@@ -25,6 +30,8 @@ sealed class HeatmapEvent {
 
 sealed class HeatmapAction {
     object BusyHoursClicked : HeatmapAction()
+    data class SearchLocation(val query: String) : HeatmapAction()
+    object ConsumeSearch : HeatmapAction()
 }
 
 @HiltViewModel
@@ -33,12 +40,14 @@ class HeatmapViewModel @Inject constructor(
     private val networkMonitor: NetworkMonitor,
     private val checkEntitlementUseCase: CheckEntitlementUseCase,
     private val locationRepository: LocationRepository,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private val _events = Channel<HeatmapEvent>()
     val events = _events.receiveAsFlow()
 
     private val userInitialLocation = MutableStateFlow<LatLng?>(null)
+    private val searchLocation = MutableStateFlow<LatLng?>(null)
 
     init {
         viewModelScope.launch {
@@ -54,14 +63,17 @@ class HeatmapViewModel @Inject constructor(
         networkMonitor.isOnline,
         checkEntitlementUseCase.isPremium,
         userInitialLocation,
-    ) { zones, isOnline, isPremium, initialLocation ->
+        searchLocation,
+    ) { zones, isOnline, isPremium, initialLocation, searchLoc ->
         HeatmapUiState(
             isLoading = false,
             noiseZones = zones,
+            selectedZoneDetails = zones.firstOrNull(),
             isOffline = !isOnline,
             isPremium = isPremium,
             error = null,
             userInitialLocation = initialLocation,
+            searchLocationResult = searchLoc,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -77,6 +89,26 @@ class HeatmapViewModel @Inject constructor(
                         _events.send(HeatmapEvent.NavigateToPaywall)
                     }
                 }
+            }
+            is HeatmapAction.SearchLocation -> {
+                viewModelScope.launch {
+                    val geocoder = Geocoder(context)
+                    try {
+                        val addresses = withContext(Dispatchers.IO) {
+                            @Suppress("DEPRECATION")
+                            geocoder.getFromLocationName(action.query, 1)
+                        }
+                        if (!addresses.isNullOrEmpty()) {
+                            val address = addresses[0]
+                            searchLocation.value = LatLng(address.latitude, address.longitude)
+                        }
+                    } catch (e: Exception) {
+                        // Ignore or handle
+                    }
+                }
+            }
+            is HeatmapAction.ConsumeSearch -> {
+                searchLocation.value = null
             }
         }
     }

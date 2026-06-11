@@ -1,16 +1,20 @@
 package dam.a50274.diminuendo.ui.feature.capture
 
+import android.content.Context
+import android.location.Geocoder
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dam.a50274.diminuendo.data.local.PreferencesKeys
 import dam.a50274.diminuendo.domain.model.Measurement
 import dam.a50274.diminuendo.domain.model.SyncException
 import dam.a50274.diminuendo.domain.repository.AudioCaptureRepository
 import dam.a50274.diminuendo.domain.repository.LocationRepository
 import dam.a50274.diminuendo.domain.usecase.SaveMeasurementUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.max
@@ -29,6 +34,7 @@ class CaptureViewModel @Inject constructor(
     private val saveMeasurementUseCase: SaveMeasurementUseCase,
     private val locationRepository: LocationRepository,
     private val dataStore: DataStore<Preferences>,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CaptureUiState())
@@ -65,6 +71,9 @@ class CaptureViewModel @Inject constructor(
             }
             is CaptureAction.AcknowledgeError -> {
                 _uiState.update { it.copy(error = null) }
+            }
+            is CaptureAction.ConsumeSaveSuccess -> {
+                _uiState.update { it.copy(saveSuccess = false) }
             }
         }
     }
@@ -136,6 +145,46 @@ class CaptureViewModel @Inject constructor(
                 _uiState.update { it.copy(error = "Location unavailable, saving without coordinates") }
             }
 
+            var resolvedLocationName = "Unknown Location"
+            if (location != null) {
+                resolvedLocationName = withContext(Dispatchers.IO) {
+                    try {
+                        if (Geocoder.isPresent()) {
+                            val geocoder = Geocoder(context)
+
+                            @Suppress("DEPRECATION")
+                            val addresses = geocoder.getFromLocation(
+                                location.latitude,
+                                location.longitude,
+                                1,
+                            )
+                            val address = addresses?.firstOrNull()
+                            if (address != null) {
+                                val street = address.thoroughfare
+                                val city = address.locality
+                                val subLocality = address.subLocality
+
+                                if (street != null && city != null) {
+                                    "$street, $city"
+                                } else if (city != null) {
+                                    city
+                                } else if (subLocality != null) {
+                                    subLocality
+                                } else {
+                                    "Unknown Location"
+                                }
+                            } else {
+                                "Unknown Location"
+                            }
+                        } else {
+                            "Unknown Location"
+                        }
+                    } catch (e: Exception) {
+                        "Unknown Location"
+                    }
+                }
+            }
+
             val measurement = Measurement(
                 id = UUID.randomUUID().toString(),
                 userId = currentUserId.ifEmpty { "debug_user" },
@@ -145,18 +194,19 @@ class CaptureViewModel @Inject constructor(
                 latitude = location?.latitude,
                 longitude = location?.longitude,
                 contextTag = "Capture",
-                locationName = "Captured Location",
+                locationName = resolvedLocationName,
             )
 
             try {
                 saveMeasurementUseCase(measurement)
+                _uiState.update { it.copy(saveSuccess = true) }
             } catch (e: Exception) {
                 val errorMsg = if (e is SyncException) {
                     "Measurement saved locally but failed to sync: ${e.message}"
                 } else {
                     e.message ?: "Failed to save measurement"
                 }
-                _uiState.update { it.copy(error = errorMsg) }
+                _uiState.update { it.copy(error = errorMsg, saveSuccess = true) } // Still successful locally
             }
         }
     }

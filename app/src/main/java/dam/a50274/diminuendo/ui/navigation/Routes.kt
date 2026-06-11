@@ -19,3 +19,6 @@ object AiConsultant
 
 @Serializable
 object Paywall
+
+@Serializable
+object Profile

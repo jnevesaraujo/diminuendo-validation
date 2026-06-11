@@ -4,4 +4,5 @@ sealed interface CaptureAction {
     object ToggleRecording : CaptureAction
     object SaveMeasurement : CaptureAction
     object AcknowledgeError : CaptureAction
+    object ConsumeSaveSuccess : CaptureAction
 }

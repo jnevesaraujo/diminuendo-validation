@@ -20,8 +20,9 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 | 2026-06-09 | Antigravity | Debug Firestore heatmap | `debugging_prompts.md#p3&p4&p5&p6&p7` | Missed some requirements | Accepted | Completed debug prompt |
 | 2026-06-10 | Antigravity | M5 paywall | `architecture_prompts.md#p8` | Paywall and Busy Hours working. Gemini daily limit not wired — AiViewModel was a stub. Location never implemented in capture pipeline | Edited | Two follow-up prompts required: location fix and Gemini implementation |
 | 2026-06-11 | Antigravity | M7 test suite — CheckEntitlementUseCase, HeatmapViewModel, MeasurementMapper, MeasurementRepository | `architecture_prompts.md#p9` | All test cases generated, ./gradlew test green | Edited | Added debug prompt |
-| 2026-06-11 | Antigravity | CI fix | `debugging_prompts.md#p9&p10` | CI Node.js update, lint reduction | Accepted | <fill after> |
-| 2026-06-11 | Antigravity | UI polish pass + Profile screen | `compose_prompts.md#p4` | Layout fixes, TopAppBar, Profile screen | Accepted | <fill after> |
+| 2026-06-11 | Antigravity | CI fix | `debugging_prompts.md#p9&p10` | CI Node.js update, lint reduction | Edited | Corrected some aspects manually, like minSDK and gradle version |
+| 2026-06-11 | Antigravity | UI polish pass + Profile screen | `compose_prompts.md#p4` | Layout fixes, TopAppBar, Profile screen | Edited | Included debug prompt |
+| 2026-06-11 | Antigravity | Bug fixes — reverse geocoding, Busy Hours data, TopAppBar size, search bar styling | `debugging_prompts.md#p10&p11&p12` | Four targeted fixes, no business logic changes | Edited | Agent had hardcoded placeholder strings in ViewModel and bottom sheet; required explicit fix prompts |
 | | | | | | | |
 
 ## AI errors / hallucinations detected

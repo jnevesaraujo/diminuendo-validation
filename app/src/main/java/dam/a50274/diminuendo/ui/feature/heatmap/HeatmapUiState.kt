@@ -11,4 +11,5 @@ data class HeatmapUiState(
     val isPremium: Boolean = false,
     val error: String? = null,
     val userInitialLocation: LatLng? = null,
+    val searchLocationResult: LatLng? = null,
 )

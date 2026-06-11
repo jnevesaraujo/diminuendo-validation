@@ -9,4 +9,5 @@ data class CaptureUiState(
     val isOffline: Boolean = false,
     val error: String? = null,
     val latestWaveform: List<Double> = emptyList(),
+    val saveSuccess: Boolean = false,
 )

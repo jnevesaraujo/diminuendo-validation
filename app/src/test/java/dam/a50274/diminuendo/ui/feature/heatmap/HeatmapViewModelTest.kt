@@ -44,11 +44,14 @@ class HeatmapViewModelTest {
         locationRepository = mockk<LocationRepository>()
         every { locationRepository.getCurrentLocation() } returns flowOf(null)
 
+        val context = mockk<android.content.Context>(relaxed = true)
+
         viewModel = HeatmapViewModel(
             noiseZoneRepository,
             networkMonitor,
             checkEntitlementUseCase,
             locationRepository,
+            context,
         )
     }
 
