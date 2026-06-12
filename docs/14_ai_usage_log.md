@@ -23,12 +23,17 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 | 2026-06-11 | Antigravity | CI fix | `debugging_prompts.md#p9&p10` | CI Node.js update, lint reduction | Edited | Corrected some aspects manually, like minSDK and gradle version |
 | 2026-06-11 | Antigravity | UI polish pass + Profile screen | `compose_prompts.md#p4` | Layout fixes, TopAppBar, Profile screen | Edited | Included debug prompt |
 | 2026-06-11 | Antigravity | Bug fixes — reverse geocoding, Busy Hours data, TopAppBar size, search bar styling | `debugging_prompts.md#p10&p11&p12` | Four targeted fixes, no business logic changes | Edited | Agent had hardcoded placeholder strings in ViewModel and bottom sheet; required explicit fix prompts |
+| 2026-06-11 | Antigravity | Bug fix batch — TopAppBar insets, bottom sheet clipping, map selection, dB calculation, location default | `debugging_prompts.md#p9-p12` | Five targeted fixes across UI layout and audio pipeline | Accepted | dB bug was a fundamental amplitude normalisation error — agent used raw PCM values instead of normalised RMS. Map interactions were stubs never wired to ViewModel. |
+| 2026-06-11 | dB formula applied to raw PCM values (range 0–32767) instead of normalised RMS (range 0–1), producing readings 40–60dB too high | `debugging_prompts.md#p9-p12` | Noticed during emulator testing — silent room showing 60–100dB | Accepted | Fixed by implementing proper RMS calculation across full buffer and normalising against 32767.0 before applying log10 |
+| 2026-06-12 | Antigravity | HeatmapScreen cascading breakage — multiple patches conflicting | debugging_prompts.md#p15 | Required full screen rewrite after incremental fixes broke pins and insets | Edited | Agent accumulated conflicting inset and marker logic across multiple prompts. Lesson: one file, one fix, read before write |
 | | | | | | | |
 
 ## AI errors / hallucinations detected
 
 | Date | What the AI got wrong | How it was noticed | Fix |
 |---|---|---|---|
+| 2026-06-10 | dB formula applied to raw PCM values (range 0–32767) instead of normalised RMS (range 0–1), producing readings 40–60dB too high | Noticed during emulator testing — silent room showing 60–100dB | Fixed by implementing proper RMS calculation across full buffer and normalising against 32767.0 before applying log10 |
+
 | | | | |
 
 > The final reflection (what went well/badly overall) goes to `docs/15_postmortem.md`.

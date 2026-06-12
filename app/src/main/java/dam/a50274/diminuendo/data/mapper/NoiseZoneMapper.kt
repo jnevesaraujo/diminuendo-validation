@@ -9,6 +9,7 @@ fun NoiseZoneEntity.toDomain(): NoiseZone {
         locationId = this.locationId,
         centerLatitude = this.centerLatitude,
         centerLongitude = this.centerLongitude,
+        locationName = this.locationName,
         hourlyAverages = this.hourlyAverages,
         totalContributions = this.totalContributions,
     )
@@ -19,6 +20,7 @@ fun NoiseZoneDto.toEntity(): NoiseZoneEntity {
         locationId = this.locationId,
         centerLatitude = this.centerLatitude,
         centerLongitude = this.centerLongitude,
+        locationName = this.locationName,
         hourlyAverages = this.hourlyAverages,
         totalContributions = this.totalContributions,
     )

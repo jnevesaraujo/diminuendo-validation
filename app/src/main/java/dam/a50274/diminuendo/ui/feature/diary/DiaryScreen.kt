@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dam.a50274.diminuendo.R
+import dam.a50274.diminuendo.domain.model.toNoiseClassification
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -140,10 +141,25 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit, onNavigate
                                         verticalAlignment = Alignment.CenterVertically,
                                     ) {
                                         Column {
-                                            Text(
-                                                text = "${measurement.dbLevel.toInt()} dB",
-                                                style = MaterialTheme.typography.titleLarge,
-                                            )
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text(
+                                                    text = "${measurement.dbLevel.toInt()} dB",
+                                                    style = MaterialTheme.typography.titleLarge,
+                                                )
+                                                val classif = measurement.dbLevel.toNoiseClassification()
+                                                androidx.compose.material3.Surface(
+                                                    modifier = Modifier.padding(start = 8.dp),
+                                                    color = classif.color.copy(alpha = 0.2f),
+                                                    shape = MaterialTheme.shapes.small
+                                                ) {
+                                                    Text(
+                                                        text = classif.label,
+                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = classif.color
+                                                    )
+                                                }
+                                            }
                                             Text(
                                                 text = location,
                                                 style = MaterialTheme.typography.bodyMedium,

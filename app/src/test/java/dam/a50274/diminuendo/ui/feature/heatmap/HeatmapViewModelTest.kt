@@ -57,7 +57,7 @@ class HeatmapViewModelTest {
 
     @Test
     fun init_whenRepositoryEmitsZones_setsContentState() = runTest {
-        val zones = listOf(NoiseZone("zone_1", 0.0, 0.0, emptyList(), 1))
+        val zones = listOf(NoiseZone("zone_1", 0.0, 0.0, "", emptyList(), 1))
         noiseZoneRepository.noiseZonesState.value = zones
 
         viewModel.uiState.test {

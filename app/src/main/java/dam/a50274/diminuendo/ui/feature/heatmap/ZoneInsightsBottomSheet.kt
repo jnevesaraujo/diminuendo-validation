@@ -34,9 +34,6 @@ import androidx.compose.ui.unit.dp
 import dam.a50274.diminuendo.R
 import dam.a50274.diminuendo.domain.model.NoiseZone
 
-val NoiseZone.locationName: String?
-    get() = null
-
 @Composable
 fun ZoneInsightsBottomSheet(isPremium: Boolean, selectedZoneDetails: NoiseZone?, onBusyHoursClicked: () -> Unit) {
     var isExpanded by remember { mutableStateOf(false) }

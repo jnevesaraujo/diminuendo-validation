@@ -4,10 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -40,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
@@ -147,16 +146,29 @@ fun HeatmapScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        sheetPeekHeight = 80.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+        sheetPeekHeight = 128.dp,
         sheetContent = {
+            val locName = state.selectedZoneDetails?.locationName
+            val displayName = if (locName.isNullOrEmpty()) "Tap the map to explore noise zones" else locName
+            
+            val zoneToPass = state.selectedZoneDetails?.copy(locationName = displayName) 
+                ?: NoiseZone(
+                    locationId = "",
+                    locationName = displayName,
+                    centerLatitude = 0.0,
+                    centerLongitude = 0.0,
+                    hourlyAverages = emptyList(),
+                    totalContributions = 0,
+                )
+
             ZoneInsightsBottomSheet(
                 isPremium = state.isPremium,
-                selectedZoneDetails = state.selectedZoneDetails,
+                selectedZoneDetails = zoneToPass,
                 onBusyHoursClicked = { viewModel.onAction(HeatmapAction.BusyHoursClicked) },
             )
         },
-    ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
@@ -178,15 +190,18 @@ fun HeatmapScreen(
                     },
                 ) {
                     state.userInitialLocation?.let { loc ->
-                        Marker(state = MarkerState(position = loc), title = "Current Location")
+                        Marker(
+                            state = MarkerState(position = loc),
+                            title = "Your location",
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
+                            contentDescription = "Your location"
+                        )
                     }
                     state.tappedLocation?.let { loc ->
                         Marker(
                             state = MarkerState(position = loc),
                             title = "Selected Location",
-                            icon = com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(
-                                com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE,
-                            ),
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
                         )
                     }
                     if (state.noiseZones.isNotEmpty()) {

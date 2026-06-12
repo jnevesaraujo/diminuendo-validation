@@ -462,7 +462,15 @@ assembleDebug must stay green.
 
 
 **Identified cause:** cause included in the prompt
-**Fix:** The map interactions on the Heatmap screen are fully implemented and verified!
+**Fix:** The decibel reading calculation issue in AudioCaptureRepositoryImpl.kt has been fixed successfully.
+
+I updated the amplitude-to-dB conversion flow strictly following your calculations. The code now:
+
+Calculates the true rms over the full buffer array sizes using Double to avoid potential truncation or integer overflows across large sample counts.
+Normalizes the RMS exactly against 16-bit audio's maximum amplitude (32767.0).
+Uses the 20 * log10(normalizedRms) formula to convert to dBFS.
+Uses a hard floor-guard to ensure values <= 0.0001 drop to precisely 0.0 to avoid mathematically falling into negative infinity during silences.
+Explicitly maps the negative dBFS result into a generic 0 to ~90dB SPL positive range using a baseline hardware +90.0 offset. This mapping perfectly guarantees that near-silences (-60dBFS) are translated natively to ~30dB, conversational tones end up at ~50-60dB, and loud outputs touch the top ~80+ dB.
 
 **Did the AI get the cause right?** Yes
 

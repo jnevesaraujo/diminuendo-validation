@@ -8,6 +8,7 @@ data class NoiseZoneEntity(
     @PrimaryKey val locationId: String,
     val centerLatitude: Double,
     val centerLongitude: Double,
+    val locationName: String,
     val hourlyAverages: List<Double>,
     val totalContributions: Int,
 )

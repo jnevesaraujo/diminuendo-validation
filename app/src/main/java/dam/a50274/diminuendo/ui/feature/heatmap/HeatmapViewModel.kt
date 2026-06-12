@@ -125,8 +125,43 @@ class HeatmapViewModel @Inject constructor(
                 searchLocation.value = null
             }
             is HeatmapAction.ZoneSelected -> {
-                selectedZone.value = action.zone
                 tappedLocation.value = action.location
+                if (action.zone != null) {
+                    viewModelScope.launch {
+                        val name = withContext(Dispatchers.IO) {
+                            try {
+                                val geocoder = Geocoder(context)
+
+                                @Suppress("DEPRECATION")
+                                val addresses = geocoder.getFromLocation(
+                                    action.zone.centerLatitude,
+                                    action.zone.centerLongitude,
+                                    1,
+                                )
+                                if (!addresses.isNullOrEmpty()) {
+                                    val address = addresses[0]
+                                    val street = address.thoroughfare
+                                    val city = address.locality ?: address.subAdminArea ?: address.adminArea
+                                    val neighborhood = address.subLocality
+
+                                    when {
+                                        street != null && city != null -> "$street, $city"
+                                        city != null -> city
+                                        neighborhood != null -> neighborhood
+                                        else -> "Unknown Area"
+                                    }
+                                } else {
+                                    "Unknown Area"
+                                }
+                            } catch (e: Exception) {
+                                "Unknown Area"
+                            }
+                        }
+                        selectedZone.value = action.zone.copy(locationName = name)
+                    }
+                } else {
+                    selectedZone.value = null
+                }
             }
         }
     }
