@@ -74,7 +74,7 @@ fun AuthScreen(state: AuthUiState, onAction: (AuthAction) -> Unit) {
             contentDescription = "App Logo",
             modifier = Modifier
                 .size(200.dp)
-                .padding(bottom = 8.dp)
+                .padding(bottom = 8.dp),
         )
         Text(
             text = stringResource(R.string.auth_diminuendo),
