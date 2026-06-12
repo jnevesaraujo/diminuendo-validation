@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -68,7 +67,7 @@ class HeatmapViewModel @Inject constructor(
 
     @OptIn(kotlinx.coroutines.FlowPreview::class)
     private val debouncedIsOnline = networkMonitor.isOnline
-      //  .debounce(3000)
+        //  .debounce(3000)
         .onEach { mutableOfflineChecked.value = true }
 
     val uiState: StateFlow<HeatmapUiState> = combine(

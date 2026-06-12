@@ -81,7 +81,7 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier,
                         // Cleans all screens to prevent backwards navigation
                         popUpTo<Profile> { inclusive = true }
                     }
-                }
+                },
             )
         }
     }

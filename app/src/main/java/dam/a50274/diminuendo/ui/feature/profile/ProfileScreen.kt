@@ -40,7 +40,11 @@ import dam.a50274.diminuendo.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreenRoot(viewModel: ProfileViewModel = hiltViewModel(), onNavigateBack: () -> Unit, onSignOut: () -> Unit) {
+fun ProfileScreenRoot(
+    viewModel: ProfileViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit,
+    onSignOut: () -> Unit,
+) {
     val uiState by viewModel.uiState.collectAsState()
     ProfileScreen(
         uiState = uiState,
