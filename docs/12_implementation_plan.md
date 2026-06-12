@@ -6,14 +6,14 @@
 
 | Milestone | Content | Acceptance criterion | Status |
 |---|---|---|---|
-| **M0** | Project initialization, Hilt DI setup, architecture package skeleton creation, and CI pipeline green verification. | Gradle `assembleDebug` runs cleanly and automated CI assertions pass. | ☐ |
-| **M1** | Jetpack Compose NavHost setup, shell bottom-bar configuration, and basic Capture Screen local Room logging framework. | US-01: Navigating across placeholder screens works smoothly; mock database logs display properly. | ☐ |
-| **M2** | Firebase Auth configuration and remote Google AI (Gemini Pro/Flash) model integration via Vertex AI SDK. | RF-03 / US-06: A context log array sent to the model returns formatted auditory health suggestions. | ☐ |
-| **M3** | Local-First persistence deployment using Room as the Single Source of Truth (SSOT) and offline cache. | RF-06 / US-04: The app records measurements while disconnected and pushes them via WorkManager on reconnection. | ☐ |
-| **M4** | Multi-user real-time state sharing integration using Firebase Cloud Firestore snapshot listeners. | RF-02 / US-02: A measurement logged by device A appears dynamically as a heat gradient on device B's map. | ☐ |
-| **M5** | Simulated subscription entitlement manager layer setup via Jetpack DataStore parameters. | RF-05 / US-03: Interacting with restricted charts triggers the paywall; simulating a purchase unlocks all features. | ☐ |
-| **M6** | Hardware Audio pipeline activation to sample mic amplitude input and calculate live decibel metrics. | RF-04 / US-05: Real-time sound variations dynamically update the primary UI gauge and canvas waveform. | ☐ |
-| **M7** | System-wide code optimization, unit test validation coverage completion, accessibility sweeps, and final documentation. | Application matches Global Definition of Done (DoD) benchmarks. | ☐ |
+| **M0** | Project initialization, Hilt DI setup, architecture package skeleton creation, and CI pipeline green verification. | Gradle `assembleDebug` runs cleanly and automated CI assertions pass. | ☑ |
+| **M1** | Jetpack Compose NavHost setup, shell bottom-bar configuration, and basic Capture Screen local Room logging framework. | US-01: Navigating across placeholder screens works smoothly; mock database logs display properly. | ☑ |
+| **M2** | Firebase Auth configuration and remote Google AI (Gemini Pro/Flash) model integration via Vertex AI SDK. | RF-03 / US-06: A context log array sent to the model returns formatted auditory health suggestions. | ☑ |
+| **M3** | Local-First persistence deployment using Room as the Single Source of Truth (SSOT) and offline cache. | RF-06 / US-04: The app records measurements while disconnected and pushes them via WorkManager on reconnection. | ☑ |
+| **M4** | Multi-user real-time state sharing integration using Firebase Cloud Firestore snapshot listeners. | RF-02 / US-02: A measurement logged by device A appears dynamically as a heat gradient on device B's map. | ☑ |
+| **M5** | Simulated subscription entitlement manager layer setup via Jetpack DataStore parameters. | RF-05 / US-03: Interacting with restricted charts triggers the paywall; simulating a purchase unlocks all features. | ☑ |
+| **M6** | Hardware Audio pipeline activation to sample mic amplitude input and calculate live decibel metrics. | RF-04 / US-05: Real-time sound variations dynamically update the primary UI gauge and canvas waveform. | ☑ |
+| **M7** | System-wide code optimization, unit test validation coverage completion, accessibility sweeps, and final documentation. | Application matches Global Definition of Done (DoD) benchmarks. | ☑ |
 
 ---
 
