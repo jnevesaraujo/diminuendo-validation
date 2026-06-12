@@ -68,7 +68,7 @@ class HeatmapViewModel @Inject constructor(
 
     @OptIn(kotlinx.coroutines.FlowPreview::class)
     private val debouncedIsOnline = networkMonitor.isOnline
-        .debounce(300)
+      //  .debounce(3000)
         .onEach { mutableOfflineChecked.value = true }
 
     val uiState: StateFlow<HeatmapUiState> = combine(
@@ -104,7 +104,7 @@ class HeatmapViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = HeatmapUiState(isLoading = true, isOfflineChecked = false),
+        initialValue = HeatmapUiState(isLoading = true, isOffline = false, isOfflineChecked = false),
     )
 
     fun onAction(action: HeatmapAction) {

@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -75,6 +76,7 @@ fun AuthScreen(state: AuthUiState, onAction: (AuthAction) -> Unit) {
             modifier = Modifier
                 .size(200.dp)
                 .padding(bottom = 8.dp),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
         )
         Text(
             text = stringResource(R.string.auth_diminuendo),

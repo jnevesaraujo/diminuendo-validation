@@ -94,4 +94,8 @@ class ProfileViewModel @Inject constructor(
     fun clearMessages() {
         _uiState.update { it.copy(error = null, successMessage = null) }
     }
+
+    fun signOut() {
+        firebaseAuth.signOut()
+    }
 }

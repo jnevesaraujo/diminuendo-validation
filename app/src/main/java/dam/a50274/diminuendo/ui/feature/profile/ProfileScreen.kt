@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -38,7 +40,7 @@ import dam.a50274.diminuendo.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreenRoot(viewModel: ProfileViewModel = hiltViewModel(), onNavigateBack: () -> Unit) {
+fun ProfileScreenRoot(viewModel: ProfileViewModel = hiltViewModel(), onNavigateBack: () -> Unit, onSignOut: () -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
     ProfileScreen(
         uiState = uiState,
@@ -48,6 +50,7 @@ fun ProfileScreenRoot(viewModel: ProfileViewModel = hiltViewModel(), onNavigateB
         onUnlockPremium = viewModel::unlockPremium,
         onClearMessages = viewModel::clearMessages,
         onNavigateBack = onNavigateBack,
+        onSignOut = onSignOut,
     )
 }
 
@@ -61,6 +64,7 @@ fun ProfileScreen(
     onUnlockPremium: () -> Unit,
     onClearMessages: () -> Unit,
     onNavigateBack: () -> Unit,
+    onSignOut: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -156,6 +160,15 @@ fun ProfileScreen(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                 )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+
+            OutlinedButton(
+                onClick = onSignOut,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !uiState.isLoading,
+            ) {
+                Text("Sign Out")
             }
 
             if (uiState.isLoading) {

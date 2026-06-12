@@ -75,6 +75,13 @@ fun AppNavGraph(navController: NavHostController, modifier: Modifier = Modifier,
         composable<Profile> {
             ProfileScreenRoot(
                 onNavigateBack = { navController.popBackStack() },
+                onSignOut = {
+                    // Navigate to Auth
+                    navController.navigate(Auth) {
+                        // Cleans all screens to prevent backwards navigation
+                        popUpTo<Profile> { inclusive = true }
+                    }
+                }
             )
         }
     }

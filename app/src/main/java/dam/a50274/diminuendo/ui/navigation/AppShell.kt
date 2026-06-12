@@ -1,5 +1,7 @@
 package dam.a50274.diminuendo.ui.navigation
 
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -14,6 +16,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -27,12 +31,22 @@ fun AppShell(startDestination: Any = Auth) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
+    val focusManager = LocalFocusManager.current
+
     val showBottomBar = currentDestination?.hierarchy?.any {
         it.hasRoute<Heatmap>() || it.hasRoute<Capture>() ||
             it.hasRoute<Diary>() || it.hasRoute<AiConsultant>()
     } == true
 
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                // intervenes in empty gestures to withdraw keyboard
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            },
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar {
