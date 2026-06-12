@@ -546,10 +546,37 @@ It disables both the message input (OutlinedTextField) and the send button (Icon
 - Date: 2026-06-12
 
 **Prompt:**
+```
+The offline banner on HeatmapScreen flickers incorrectly — it appears briefly on login and when moving the map even when the device is online. This is a timing and state initialisation issue. Fix it without changing any other screen:
 
+In HeatmapViewModel.kt, change the initial value of isOffline in HeatmapUiState from false to a third "unknown" state — add val isOfflineChecked: Boolean = false alongside isOffline. Only show the offline banner in HeatmapScreen when isOfflineChecked == true && isOffline == true
+The NetworkMonitor flow collection in HeatmapViewModel must use debounce(300) before updating isOffline — this prevents transient connectivity events during map movement from triggering the banner
+Set isOfflineChecked = true only after the first emission from NetworkMonitor has been received and processed
+Map camera movements and Firestore fetch operations must never set isOffline = true — only the NetworkMonitor flow may update that flag
+
+Only modify HeatmapViewModel.kt and HeatmapScreen.kt. Do not touch any other file.
+assembleDebug must stay green.
+
+```
 
 **Identified cause:** 
 **Fix:**
+```
+I've implemented the fix for the offline banner flickering issue.
+
+I added the isOfflineChecked state in HeatmapUiState, introduced a 300ms debounce onto the NetworkMonitor flow within HeatmapViewModel, and updated HeatmapScreen so the offline banner now requires both isOffline and isOfflineChecked to be true. This guarantees that transient connectivity hiccups during heavy operations (like camera movements or Firestore fetching) won't falsely trigger the banner, and it won't show until we've actually received and processed the initial connectivity reading.
+
+I'm currently running assembleDebug in the background to ensure these changes compile perfectly. I'll let you know as soon as the build finishes!
+
+Run Gradle assembleDebug finished
+The build has just completed successfully!
+
+All modifications regarding the offline banner flickering—introducing isOfflineChecked, applying the debounce(300) onto the NetworkMonitor, and tying the Box visibility to both boolean flags—have compiled properly without errors.
+
+The app's offline states should now be seamless and flicker-free. Let me know what you'd like to tackle next!
+
+```
+
 
 **Did the AI get the cause right?** Yes
 
