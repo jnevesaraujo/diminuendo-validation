@@ -39,7 +39,8 @@ I've documented the changes in walkthrough.md.
 
 Everything is set up under the dam.a50274.diminuendo package, including the Room database entities, domain models, DataStore keys, and Hilt modules exactly as outlined in the documentation.
 
-Is there a specific component or feature you'd like to implement next?```
+Is there a specific component or feature you'd like to implement next?
+```
 
 **Assessment:** Edited - Verified manually the elements in the project: some packages were not renamed properly, and type converters for ROOM were missing
 
