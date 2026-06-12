@@ -59,7 +59,9 @@ class MeasurementRepositoryImplTest {
         val spiedContext = mockk<Context>(relaxed = true)
         every { spiedContext.getSystemService(Context.CONNECTIVITY_SERVICE) } returns connectivityManager
 
-        repository = MeasurementRepositoryImpl(dao, firestore, spiedContext)
+        repository = MeasurementRepositoryImpl(dao, firestore, spiedContext).apply {
+            workScheduler = {} // No-op for tests
+        }
     }
 
     @After

@@ -25,6 +25,17 @@ class MeasurementRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : MeasurementRepository {
 
+    var workScheduler: () -> Unit = {
+        val workRequest = androidx.work.OneTimeWorkRequestBuilder<dam.a50274.diminuendo.data.worker.SyncMeasurementsWorker>()
+            .setConstraints(
+                androidx.work.Constraints.Builder()
+                    .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                    .build()
+            )
+            .build()
+        androidx.work.WorkManager.getInstance(context).enqueue(workRequest)
+    }
+
     override fun getMeasurementsByUser(userId: String): Flow<List<Measurement>> {
         return dao.getAllByUser(userId).map { entities ->
             entities.map { it.toDomain() }
@@ -36,14 +47,7 @@ class MeasurementRepositoryImpl @Inject constructor(
         dao.insertOrReplace(measurement.toEntity(pendingSync = true))
 
         if (!isOnline()) {
-            val workRequest = androidx.work.OneTimeWorkRequestBuilder<dam.a50274.diminuendo.data.worker.SyncMeasurementsWorker>()
-                .setConstraints(
-                    androidx.work.Constraints.Builder()
-                        .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
-                        .build()
-                )
-                .build()
-            androidx.work.WorkManager.getInstance(context).enqueue(workRequest)
+            workScheduler()
             return
         }
 
