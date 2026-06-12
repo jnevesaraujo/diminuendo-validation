@@ -37,7 +37,10 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 | Date | What the AI got wrong | How it was noticed | Fix |
 |---|---|---|---|
 | 2026-06-10 | dB formula applied to raw PCM values (range 0–32767) instead of normalised RMS (range 0–1), producing readings 40–60dB too high | Noticed during emulator testing — silent room showing 60–100dB | Fixed by implementing proper RMS calculation across full buffer and normalising against 32767.0 before applying log10 |
-| 2026-06-10 | WorkManager explicitly disabled in manifest, never manually initialised — caused test crash | Noticed when running ./gradlew test after WorkManager implementation | Fixed via function injection pattern isolating scheduler from test environment |
+| 2026-06-11 | WorkManager referenced in M3 prompt but never implemented — only a comment placeholder left in MeasurementRepositoryImpl | Noticed during offline audit before documentation phase | Implemented SyncMeasurementsWorker with function injection pattern for testability |
+| 2026-06-11 | Agent left hardcoded "Captured Location" string in CaptureViewModel despite coordinates being available | Noticed during diary review in emulator | Implemented Geocoder reverse lookup on Dispatchers.IO |
+| 2026-06-12 | Multiple HeatmapScreen patches accumulated conflicting window inset modifiers causing TopAppBar padding regression and map pin loss | Noticed after unknown location fix broke previously working pins | Required full single-file rewrite with explicit structural constraints |
+| 2026-06-12 | WorkManager explicitly disabled in manifest, never manually initialised — caused test crash | Noticed when running ./gradlew test after WorkManager implementation | Fixed via function injection pattern isolating scheduler from test environment |
 | | | | |
 
 > The final reflection (what went well/badly overall) goes to `docs/15_postmortem.md`.
