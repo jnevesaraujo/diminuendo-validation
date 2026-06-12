@@ -65,13 +65,13 @@ fun ZoneInsightsBottomSheet(isPremium: Boolean, selectedZoneDetails: NoiseZone?,
                         androidx.compose.material3.Surface(
                             modifier = Modifier.padding(end = 8.dp),
                             color = classif.color.copy(alpha = 0.2f),
-                            shape = MaterialTheme.shapes.small
+                            shape = MaterialTheme.shapes.small,
                         ) {
                             Text(
                                 text = classif.label,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                 style = MaterialTheme.typography.labelSmall,
-                                color = classif.color
+                                color = classif.color,
                             )
                         }
                     }

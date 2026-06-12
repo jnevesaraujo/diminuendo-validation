@@ -29,6 +29,7 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 | 2026-06-12 | Antigravity | UI Refinements | `compose_prompts.md#p4` | Added Classification Badges to diary entries | Accepted | - |
 | 2026-06-12 | Antigravity | Offline UI re-wiring after HeatmapScreen rewrites broke connectivity banners | `debugging_prompts.md#p16` | Offline banners and disabled states restored across all screens | Accepted | UI offline indicators lost during cascading HeatmapScreen patches. Data layer was intact. Lesson: UI-only patches can silently drop state wiring |
 | 2026-06-12 | Antigravity | Offline completion — UI banners on remaining screens + WorkManager sync | `compose_prompts.md#p7, architecture_prompts.md#p10` | Offline banners added to HeatmapScreen, CaptureScreen, DiaryScreen. WorkManager implemented for pending sync queue | <fill after> | WorkManager was completely absent despite being referenced in M3 prompt — agent left a comment placeholder instead of implementing it |
+| 2026-06-12 | Antigravity | Fix WorkManager test crash — function injection pattern | `debugging_prompts.md#p18` | Introduced workScheduler lambda to isolate WorkManager from unit tests | Accepted | Cleaner than WorkManager test init. Verified production default still enqueues real work. |
 | | | | | | | |
 
 ## AI errors / hallucinations detected
@@ -36,6 +37,7 @@ One line per relevant interaction (non-trivial ones). Be honest about what you *
 | Date | What the AI got wrong | How it was noticed | Fix |
 |---|---|---|---|
 | 2026-06-10 | dB formula applied to raw PCM values (range 0–32767) instead of normalised RMS (range 0–1), producing readings 40–60dB too high | Noticed during emulator testing — silent room showing 60–100dB | Fixed by implementing proper RMS calculation across full buffer and normalising against 32767.0 before applying log10 |
+| 2026-06-10 | WorkManager explicitly disabled in manifest, never manually initialised — caused test crash | Noticed when running ./gradlew test after WorkManager implementation | Fixed via function injection pattern isolating scheduler from test environment |
 | | | | |
 
 > The final reflection (what went well/badly overall) goes to `docs/15_postmortem.md`.

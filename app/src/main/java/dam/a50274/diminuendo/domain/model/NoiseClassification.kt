@@ -7,7 +7,8 @@ import androidx.compose.ui.graphics.Color
 enum class NoiseClassification(val label: String) {
     SAFE("Safe"),
     CONCERNING("Concerning"),
-    DANGEROUS("Dangerous");
+    DANGEROUS("Dangerous"),
+    ;
 
     val color: Color
         @Composable

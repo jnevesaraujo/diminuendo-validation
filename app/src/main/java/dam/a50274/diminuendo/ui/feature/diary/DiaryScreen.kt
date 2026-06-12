@@ -108,106 +108,109 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit, onNavigate
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     state.isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-                state.error != null -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.diary_error_prefix, state.error),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = { onAction(DiaryAction.Refresh) }) {
-                            Text(stringResource(R.string.retry))
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                    state.error != null -> {
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.diary_error_prefix, state.error),
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(onClick = { onAction(DiaryAction.Refresh) }) {
+                                Text(stringResource(R.string.retry))
+                            }
                         }
                     }
-                }
-                state.measurements.isEmpty() -> {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(stringResource(R.string.diary_no_measurements))
-                    }
-                }
-                else -> {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                    state.measurements.isEmpty() -> {
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            items(state.measurements, key = { it.id }) { measurement ->
-                                val location = measurement.locationName
-                                    ?: stringResource(R.string.diary_unknown_location)
-                                val itemDesc = "Measurement of ${measurement.dbLevel.toInt()} dB at $location"
-                                val formatter = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
-                                val formattedDate = formatter.format(Date(measurement.timestamp))
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .semantics { contentDescription = itemDesc },
-                                ) {
-                                    Row(
+                            Text(stringResource(R.string.diary_no_measurements))
+                        }
+                    }
+                    else -> {
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                items(state.measurements, key = { it.id }) { measurement ->
+                                    val location = measurement.locationName
+                                        ?: stringResource(R.string.diary_unknown_location)
+                                    val itemDesc = "Measurement of ${measurement.dbLevel.toInt()} dB at $location"
+                                    val formatter = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
+                                    val formattedDate = formatter.format(Date(measurement.timestamp))
+                                    Card(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(16.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically,
+                                            .semantics { contentDescription = itemDesc },
                                     ) {
-                                        Column {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Text(
-                                                    text = "${measurement.dbLevel.toInt()} dB",
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                )
-                                                if (measurement.pendingSync) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.CloudOff,
-                                                        contentDescription = "Pending Sync",
-                                                        modifier = Modifier.padding(start = 8.dp).size(20.dp),
-                                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                                    )
-                                                }
-                                                val classif = measurement.dbLevel.toNoiseClassification()
-                                                androidx.compose.material3.Surface(
-                                                    modifier = Modifier.padding(start = 8.dp),
-                                                    color = classif.color.copy(alpha = 0.2f),
-                                                    shape = MaterialTheme.shapes.small
-                                                ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(16.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
+                                            Column {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
                                                     Text(
-                                                        text = classif.label,
-                                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                                        style = MaterialTheme.typography.labelSmall,
-                                                        color = classif.color
+                                                        text = "${measurement.dbLevel.toInt()} dB",
+                                                        style = MaterialTheme.typography.titleLarge,
                                                     )
+                                                    if (measurement.pendingSync) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.CloudOff,
+                                                            contentDescription = "Pending Sync",
+                                                            modifier = Modifier.padding(start = 8.dp).size(20.dp),
+                                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        )
+                                                    }
+                                                    val classif = measurement.dbLevel.toNoiseClassification()
+                                                    androidx.compose.material3.Surface(
+                                                        modifier = Modifier.padding(start = 8.dp),
+                                                        color = classif.color.copy(alpha = 0.2f),
+                                                        shape = MaterialTheme.shapes.small,
+                                                    ) {
+                                                        Text(
+                                                            text = classif.label,
+                                                            modifier = Modifier.padding(
+                                                                horizontal = 6.dp,
+                                                                vertical = 2.dp,
+                                                            ),
+                                                            style = MaterialTheme.typography.labelSmall,
+                                                            color = classif.color,
+                                                        )
+                                                    }
                                                 }
+                                                Text(
+                                                    text = location,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                )
+                                                Text(
+                                                    text = formattedDate,
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                )
                                             }
-                                            Text(
-                                                text = location,
-                                                style = MaterialTheme.typography.bodyMedium,
-                                            )
-                                            Text(
-                                                text = formattedDate,
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            )
-                                        }
-                                        IconButton(onClick = { onAction(DiaryAction.Delete(measurement.id)) }) {
-                                            Icon(
-                                                imageVector = Icons.Default.Delete,
-                                                contentDescription = stringResource(R.string.diary_delete_desc),
-                                            )
+                                            IconButton(onClick = { onAction(DiaryAction.Delete(measurement.id)) }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Delete,
+                                                    contentDescription = stringResource(R.string.diary_delete_desc),
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
                 }
             }
         }

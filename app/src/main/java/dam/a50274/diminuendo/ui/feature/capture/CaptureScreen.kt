@@ -105,7 +105,7 @@ fun CaptureScreen(
             val result = snackbarHostState.showSnackbar(
                 message = "Measurement saved",
                 actionLabel = "View in Diary",
-                duration = SnackbarDuration.Short
+                duration = SnackbarDuration.Short,
             )
             if (result == SnackbarResult.ActionPerformed) {
                 onNavigateToDiary()
@@ -167,146 +167,146 @@ fun CaptureScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
-            // Top Section: Stats
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            ) {
-                StatItem(label = stringResource(R.string.capture_stat_avg), value = "${state.averageDb.toInt()} dB")
-                StatItem(label = stringResource(R.string.capture_stat_peak), value = "${state.peakDb.toInt()} dB")
-                StatItem(label = stringResource(R.string.capture_stat_time), value = "${state.elapsedSeconds}s")
-            }
-
-            // Center: Circular Gauge
-            Box(
-                modifier = Modifier.size(250.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                val gaugeDesc = stringResource(R.string.capture_gauge_desc)
-                CircularDbGauge(
-                    currentDb = state.currentDb,
-                    modifier = Modifier.semantics { contentDescription = gaugeDesc },
-                )
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "${state.currentDb.toInt()}",
-                        style = MaterialTheme.typography.displayLarge,
-                    )
-                    Text(text = "dB", style = MaterialTheme.typography.titleMedium)
-                }
-            }
-
-            // Bottom Section: Waveform & Controls
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                if (state.latestWaveform.isNotEmpty()) {
-                    val waveformDesc = stringResource(R.string.capture_waveform_desc)
-                    WaveformVisualizer(
-                        waveform = state.latestWaveform,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp)
-                            .semantics { contentDescription = waveformDesc },
-                    )
-                } else {
-                    Spacer(modifier = Modifier.height(60.dp))
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                if (showPermissionRationale) {
-                    Text(
-                        text = stringResource(R.string.capture_permission_rationale),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(bottom = 8.dp),
-                    )
-                }
-                if (state.error != null) {
-                    Text(
-                        text = state.error,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(bottom = 8.dp),
-                    )
-                }
-
+                // Top Section: Stats
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
-                    Button(
-                        onClick = {
-                            if (state.isRecording) {
-                                onAction(CaptureAction.ToggleRecording)
-                            } else {
-                                val audioGranted = ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.RECORD_AUDIO,
-                                ) == PackageManager.PERMISSION_GRANTED
+                    StatItem(label = stringResource(R.string.capture_stat_avg), value = "${state.averageDb.toInt()} dB")
+                    StatItem(label = stringResource(R.string.capture_stat_peak), value = "${state.peakDb.toInt()} dB")
+                    StatItem(label = stringResource(R.string.capture_stat_time), value = "${state.elapsedSeconds}s")
+                }
 
-                                val locationGranted = ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                ) == PackageManager.PERMISSION_GRANTED
-
-                                if (audioGranted && locationGranted) {
-                                    showPermissionRationale = false
-                                    onAction(CaptureAction.ToggleRecording)
-                                } else {
-                                    permissionLauncher.launch(
-                                        arrayOf(
-                                            Manifest.permission.RECORD_AUDIO,
-                                            Manifest.permission.ACCESS_FINE_LOCATION,
-                                        ),
-                                    )
-                                }
-                            }
-                        },
-                        shape = CircleShape,
-                        modifier = Modifier.size(80.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (state.isRecording) {
-                                MaterialTheme.colorScheme.error
-                            } else {
-                                MaterialTheme.colorScheme.primary
-                            },
-                        ),
-                    ) {
+                // Center: Circular Gauge
+                Box(
+                    modifier = Modifier.size(250.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    val gaugeDesc = stringResource(R.string.capture_gauge_desc)
+                    CircularDbGauge(
+                        currentDb = state.currentDb,
+                        modifier = Modifier.semantics { contentDescription = gaugeDesc },
+                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            if (state.isRecording) {
-                                stringResource(
-                                    R.string.capture_btn_stop,
-                                )
-                            } else {
-                                stringResource(R.string.capture_btn_start)
-                            },
+                            text = "${state.currentDb.toInt()}",
+                            style = MaterialTheme.typography.displayLarge,
+                        )
+                        Text(text = "dB", style = MaterialTheme.typography.titleMedium)
+                    }
+                }
+
+                // Bottom Section: Waveform & Controls
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    if (state.latestWaveform.isNotEmpty()) {
+                        val waveformDesc = stringResource(R.string.capture_waveform_desc)
+                        WaveformVisualizer(
+                            waveform = state.latestWaveform,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                                .semantics { contentDescription = waveformDesc },
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.height(60.dp))
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    if (showPermissionRationale) {
+                        Text(
+                            text = stringResource(R.string.capture_permission_rationale),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                    }
+                    if (state.error != null) {
+                        Text(
+                            text = state.error,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(bottom = 8.dp),
                         )
                     }
 
-                    if (state.averageDb > 0 && !state.isRecording) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Button(
-                                onClick = { onAction(CaptureAction.SaveMeasurement) },
-                                modifier = Modifier.height(80.dp),
-                            ) {
-                                Text(stringResource(R.string.capture_btn_save))
-                            }
-                            if (state.isOffline) {
-                                Text(
-                                    text = "Will sync when back online",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    modifier = Modifier.padding(top = 4.dp)
-                                )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Button(
+                            onClick = {
+                                if (state.isRecording) {
+                                    onAction(CaptureAction.ToggleRecording)
+                                } else {
+                                    val audioGranted = ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.RECORD_AUDIO,
+                                    ) == PackageManager.PERMISSION_GRANTED
+
+                                    val locationGranted = ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.ACCESS_FINE_LOCATION,
+                                    ) == PackageManager.PERMISSION_GRANTED
+
+                                    if (audioGranted && locationGranted) {
+                                        showPermissionRationale = false
+                                        onAction(CaptureAction.ToggleRecording)
+                                    } else {
+                                        permissionLauncher.launch(
+                                            arrayOf(
+                                                Manifest.permission.RECORD_AUDIO,
+                                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                            ),
+                                        )
+                                    }
+                                }
+                            },
+                            shape = CircleShape,
+                            modifier = Modifier.size(80.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (state.isRecording) {
+                                    MaterialTheme.colorScheme.error
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                },
+                            ),
+                        ) {
+                            Text(
+                                if (state.isRecording) {
+                                    stringResource(
+                                        R.string.capture_btn_stop,
+                                    )
+                                } else {
+                                    stringResource(R.string.capture_btn_start)
+                                },
+                            )
+                        }
+
+                        if (state.averageDb > 0 && !state.isRecording) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Button(
+                                    onClick = { onAction(CaptureAction.SaveMeasurement) },
+                                    modifier = Modifier.height(80.dp),
+                                ) {
+                                    Text(stringResource(R.string.capture_btn_save))
+                                }
+                                if (state.isOffline) {
+                                    Text(
+                                        text = "Will sync when back online",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        modifier = Modifier.padding(top = 4.dp),
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
     }
 }
 

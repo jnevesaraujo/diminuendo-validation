@@ -9,6 +9,7 @@ import dam.a50274.diminuendo.data.local.MeasurementDao
 import dam.a50274.diminuendo.data.mapper.toDomain
 import dam.a50274.diminuendo.data.mapper.toDto
 import dam.a50274.diminuendo.data.mapper.toEntity
+import dam.a50274.diminuendo.data.worker.SyncMeasurementsWorker
 import dam.a50274.diminuendo.domain.model.Measurement
 import dam.a50274.diminuendo.domain.model.SyncException
 import dam.a50274.diminuendo.domain.repository.MeasurementRepository
@@ -26,11 +27,11 @@ class MeasurementRepositoryImpl @Inject constructor(
 ) : MeasurementRepository {
 
     var workScheduler: () -> Unit = {
-        val workRequest = androidx.work.OneTimeWorkRequestBuilder<dam.a50274.diminuendo.data.worker.SyncMeasurementsWorker>()
+        val workRequest = androidx.work.OneTimeWorkRequestBuilder<SyncMeasurementsWorker>()
             .setConstraints(
                 androidx.work.Constraints.Builder()
                     .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
-                    .build()
+                    .build(),
             )
             .build()
         androidx.work.WorkManager.getInstance(context).enqueue(workRequest)

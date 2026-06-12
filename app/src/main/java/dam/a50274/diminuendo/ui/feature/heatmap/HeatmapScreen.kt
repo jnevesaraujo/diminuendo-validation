@@ -3,13 +3,13 @@ package dam.a50274.diminuendo.ui.feature.heatmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Person
@@ -220,14 +220,14 @@ fun HeatmapScreen(
                                 state = MarkerState(position = loc),
                                 title = "Your location",
                                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
-                                contentDescription = "Your location"
+                                contentDescription = "Your location",
                             )
                         }
                         state.tappedLocation?.let { loc ->
                             Marker(
                                 state = MarkerState(position = loc),
                                 title = "Selected Location",
-                                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
                             )
                         }
                         if (state.noiseZones.isNotEmpty()) {
@@ -261,7 +261,7 @@ fun HeatmapScreen(
                                     if (loc != null) {
                                         coroutineScope.launch {
                                             cameraPositionState.animate(
-                                                CameraUpdateFactory.newLatLngZoom(loc, 15f)
+                                                CameraUpdateFactory.newLatLngZoom(loc, 15f),
                                             )
                                         }
                                     } else {
@@ -269,11 +269,11 @@ fun HeatmapScreen(
                                             snackbarHostState.showSnackbar("Location unavailable")
                                         }
                                     }
-                                }
+                                },
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.MyLocation,
-                                    contentDescription = "Go to my location"
+                                    contentDescription = "Go to my location",
                                 )
                             }
                         },

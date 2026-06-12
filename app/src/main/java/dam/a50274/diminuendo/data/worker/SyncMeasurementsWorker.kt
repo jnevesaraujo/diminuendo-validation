@@ -18,7 +18,7 @@ class SyncMeasurementsWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val dao: MeasurementDao,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -32,7 +32,7 @@ class SyncMeasurementsWorker @AssistedInject constructor(
         for (entity in pending) {
             try {
                 val measurement = entity.toDomain()
-                
+
                 // Upload Measurement
                 firestore.collection("users")
                     .document(measurement.userId)

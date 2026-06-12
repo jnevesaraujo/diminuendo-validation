@@ -540,7 +540,7 @@ It disables both the message input (OutlinedTextField) and the send button (Icon
 
 ---
 
-### #p17 
+### #p17 Offline banner flicker
 
 - Tool: Antigravity
 - Date: 2026-06-12
@@ -578,6 +578,51 @@ The app's offline states should now be seamless and flicker-free. Let me know wh
 ```
 
 
+**Did the AI get the cause right?** Yes
+
+---
+
+### #p18 Offline banner flicker
+
+- Tool: Antigravity
+- Date: 2026-06-12
+
+**Prompt:**
+```
+Two tests in MeasurementRepositoryImplTest are failing:
+
+saveMeasurement_whenOffline_writesRoomOnlyWithPendingSyncTrue
+getPendingSync_afterOfflineSave_returnsQueuedEntry
+
+Read the full current content of MeasurementRepositoryImplTest.kt and MeasurementRepositoryImpl.kt before changing anything. Then fix the tests:
+
+If MeasurementRepositoryImpl now calls WorkManager when saving offline, the test environment needs WorkManager initialised — add WorkManagerTestInitHelper.initializeTestWorkManager(context) in the test @Before setup, or refactor the repository to accept an optional WorkScheduler interface that the test can replace with a no-op fake
+If FakeFirestoreDataSource is throwing instead of doing nothing when offline, change it to silently return success without writing anything — the offline path should skip Firestore entirely, not fail
+Confirm the in-memory Room database is built with Room.inMemoryDatabaseBuilder() and .allowMainThreadQueries() in the test setup
+After each fix confirm the test logic matches the actual repository behaviour — if the repository changed during WorkManager integration, the test assertions may need updating to match
+
+Only modify MeasurementRepositoryImplTest.kt and if strictly necessary MeasurementRepositoryImpl.kt. Do not change any other production file.
+./gradlew test must be fully green after this fix.
+```
+
+**Identified cause:** WorkManager not being initialized properly
+**Fix:**
+```
+Instead of pulling in test-only WorkManager dependencies (which would involve modifying your build script), I opted for the cleaner, more robust architecture approach you suggested: extracting the WorkManager enqueue operation behind an interface/lambda!
+
+I introduced a workScheduler: () -> Unit property into MeasurementRepositoryImpl which executes the standard WorkManager logic by default. In MeasurementRepositoryImplTest, I simply overrode repository.workScheduler = {} with a no-op fake in the @Before setup.
+
+This beautifully isolates the component tests, bypasses the WorkManager initialization crash entirely, and doesn't pollute the build.gradle.kts file.
+
+The unit tests are now running in the background. I expect a perfectly green suite momentarily!
+
+Run tests to verify fixes finished
+The unit tests have successfully passed! The BUILD SUCCESSFUL result for ./gradlew test confirms that everything is green.
+
+The fake workScheduler gracefully caught the offline logic in the tests without crashing, leaving your production dependencies clean and your constraints strictly respected.
+
+Everything looks solid. What would you like to build or fix next?
+``` 
 **Did the AI get the cause right?** Yes
 
 <!-- new entries below -->
