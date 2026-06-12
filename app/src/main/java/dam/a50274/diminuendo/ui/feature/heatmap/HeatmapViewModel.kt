@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -62,14 +64,22 @@ class HeatmapViewModel @Inject constructor(
         }
     }
 
+    private val _isOfflineChecked = MutableStateFlow(false)
+
+    @OptIn(kotlinx.coroutines.FlowPreview::class)
+    private val debouncedIsOnline = networkMonitor.isOnline
+        .debounce(300)
+        .onEach { _isOfflineChecked.value = true }
+
     val uiState: StateFlow<HeatmapUiState> = combine(
         noiseZoneRepository.getNoiseZones(),
-        networkMonitor.isOnline,
+        debouncedIsOnline,
         checkEntitlementUseCase.isPremium,
         userInitialLocation,
         searchLocation,
         selectedZone,
         tappedLocation,
+        _isOfflineChecked
     ) { params ->
         val zones = params[0] as List<NoiseZone>
         val isOnline = params[1] as Boolean
@@ -78,11 +88,13 @@ class HeatmapViewModel @Inject constructor(
         val searchLoc = params[4] as LatLng?
         val selZone = params[5] as NoiseZone?
         val tapLoc = params[6] as LatLng?
+        val isOfflineChecked = params[7] as Boolean
         HeatmapUiState(
             isLoading = false,
             noiseZones = zones,
             selectedZoneDetails = selZone,
             isOffline = !isOnline,
+            isOfflineChecked = isOfflineChecked,
             isPremium = isPremium,
             error = null,
             userInitialLocation = initialLocation,
@@ -92,7 +104,7 @@ class HeatmapViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = HeatmapUiState(isLoading = true),
+        initialValue = HeatmapUiState(isLoading = true, isOfflineChecked = false),
     )
 
     fun onAction(action: HeatmapAction) {

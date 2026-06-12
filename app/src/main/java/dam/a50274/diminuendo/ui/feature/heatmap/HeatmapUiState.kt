@@ -8,6 +8,7 @@ data class HeatmapUiState(
     val noiseZones: List<NoiseZone> = emptyList(),
     val selectedZoneDetails: NoiseZone? = null,
     val isOffline: Boolean = false,
+    val isOfflineChecked: Boolean = false,
     val isPremium: Boolean = false,
     val error: String? = null,
     val userInitialLocation: LatLng? = null,

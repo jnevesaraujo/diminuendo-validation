@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import dam.a50274.diminuendo.R
 import dam.a50274.diminuendo.domain.model.NoiseZone
+import dam.a50274.diminuendo.domain.model.toNoiseClassification
 
 @Composable
 fun ZoneInsightsBottomSheet(isPremium: Boolean, selectedZoneDetails: NoiseZone?, onBusyHoursClicked: () -> Unit) {
@@ -55,11 +56,31 @@ fun ZoneInsightsBottomSheet(isPremium: Boolean, selectedZoneDetails: NoiseZone?,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 val locName = selectedZoneDetails?.locationName
-                Text(
-                    text = if (locName.isNullOrEmpty()) "Unknown Location" else locName,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val hourlyAverages = selectedZoneDetails?.hourlyAverages ?: emptyList()
+                    val nonZeroAverages = hourlyAverages.filter { it > 0.0 }
+                    if (nonZeroAverages.isNotEmpty()) {
+                        val avgDb = nonZeroAverages.average()
+                        val classif = avgDb.toNoiseClassification()
+                        androidx.compose.material3.Surface(
+                            modifier = Modifier.padding(end = 8.dp),
+                            color = classif.color.copy(alpha = 0.2f),
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            Text(
+                                text = classif.label,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = classif.color
+                            )
+                        }
+                    }
+                    Text(
+                        text = if (locName.isNullOrEmpty()) "Unknown Location" else locName,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
                 Text(
                     text = "Busy Hours",
                     style = MaterialTheme.typography.titleMedium,

@@ -1,6 +1,7 @@
 package dam.a50274.diminuendo.ui.feature.heatmap
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -8,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.CircularProgressIndicator
@@ -150,8 +153,8 @@ fun HeatmapScreen(
         sheetContent = {
             val locName = state.selectedZoneDetails?.locationName
             val displayName = if (locName.isNullOrEmpty()) "Tap the map to explore noise zones" else locName
-            
-            val zoneToPass = state.selectedZoneDetails?.copy(locationName = displayName) 
+
+            val zoneToPass = state.selectedZoneDetails?.copy(locationName = displayName)
                 ?: NoiseZone(
                     locationId = "",
                     locationName = displayName,
@@ -167,73 +170,121 @@ fun HeatmapScreen(
                 onBusyHoursClicked = { viewModel.onAction(HeatmapAction.BusyHoursClicked) },
             )
         },
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (state.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else {
-                val mapDesc = stringResource(R.string.heatmap_map_desc)
-                GoogleMap(
-                    modifier = Modifier.fillMaxSize().semantics { contentDescription = mapDesc },
-                    cameraPositionState = cameraPositionState,
-                    onMapClick = { latLng ->
-                        val nearestZone = findNearestZone(latLng, state.noiseZones)
-                        viewModel.onAction(HeatmapAction.ZoneSelected(nearestZone, latLng))
-                        if (nearestZone != null) {
-                            coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                        } else {
-                            coroutineScope.launch {
-                                scaffoldState.bottomSheetState.partialExpand()
-                                snackbarHostState.showSnackbar("No noise data for this area yet")
-                            }
-                        }
-                    },
-                ) {
-                    state.userInitialLocation?.let { loc ->
-                        Marker(
-                            state = MarkerState(position = loc),
-                            title = "Your location",
-                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
-                            contentDescription = "Your location"
-                        )
-                    }
-                    state.tappedLocation?.let { loc ->
-                        Marker(
-                            state = MarkerState(position = loc),
-                            title = "Selected Location",
-                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
-                        )
-                    }
-                    if (state.noiseZones.isNotEmpty()) {
-                        val provider = HeatmapTileProvider.Builder()
-                            .weightedData(
-                                state.noiseZones.map {
-                                    WeightedLatLng(
-                                        LatLng(it.centerLatitude, it.centerLongitude),
-                                        it.totalContributions.toDouble(),
-                                    )
-                                },
-                            )
-                            .build()
-                        TileOverlay(tileProvider = provider)
-                    }
-                }
-                DockedSearchBar(
-                    query = searchQuery,
-                    onQueryChange = { searchQuery = it },
-                    onSearch = {
-                        viewModel.onAction(HeatmapAction.SearchLocation(searchQuery))
-                    },
-                    active = false,
-                    onActiveChange = {},
-                    placeholder = { Text("Search location…") },
+    ) { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            if (state.isOfflineChecked && state.isOffline) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 8.dp)
-                        .align(Alignment.TopCenter),
+                        .background(androidx.compose.material3.MaterialTheme.colorScheme.errorContainer)
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    // No suggestions content
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "You are offline. Data will sync when reconnected",
+                            color = androidx.compose.material3.MaterialTheme.colorScheme.onErrorContainer,
+                            style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                        )
+                        Text(
+                            text = "Map data may be outdated",
+                            color = androidx.compose.material3.MaterialTheme.colorScheme.onErrorContainer,
+                            style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                }
+            }
+            Box(modifier = Modifier.fillMaxSize()) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                } else {
+                    val mapDesc = stringResource(R.string.heatmap_map_desc)
+                    GoogleMap(
+                        modifier = Modifier.fillMaxSize().semantics { contentDescription = mapDesc },
+                        cameraPositionState = cameraPositionState,
+                        onMapClick = { latLng ->
+                            val nearestZone = findNearestZone(latLng, state.noiseZones)
+                            viewModel.onAction(HeatmapAction.ZoneSelected(nearestZone, latLng))
+                            if (nearestZone != null) {
+                                coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
+                            } else {
+                                coroutineScope.launch {
+                                    scaffoldState.bottomSheetState.partialExpand()
+                                    snackbarHostState.showSnackbar("No noise data for this area yet")
+                                }
+                            }
+                        },
+                    ) {
+                        state.userInitialLocation?.let { loc ->
+                            Marker(
+                                state = MarkerState(position = loc),
+                                title = "Your location",
+                                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
+                                contentDescription = "Your location"
+                            )
+                        }
+                        state.tappedLocation?.let { loc ->
+                            Marker(
+                                state = MarkerState(position = loc),
+                                title = "Selected Location",
+                                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+                            )
+                        }
+                        if (state.noiseZones.isNotEmpty()) {
+                            val provider = HeatmapTileProvider.Builder()
+                                .weightedData(
+                                    state.noiseZones.map {
+                                        WeightedLatLng(
+                                            LatLng(it.centerLatitude, it.centerLongitude),
+                                            it.totalContributions.toDouble(),
+                                        )
+                                    },
+                                )
+                                .build()
+                            TileOverlay(tileProvider = provider)
+                        }
+                    }
+                    DockedSearchBar(
+                        query = searchQuery,
+                        onQueryChange = { searchQuery = it },
+                        onSearch = {
+                            viewModel.onAction(HeatmapAction.SearchLocation(searchQuery))
+                        },
+                        active = false,
+                        onActiveChange = {},
+                        enabled = !state.isOffline,
+                        placeholder = { Text("Search location…") },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    val loc = state.userInitialLocation
+                                    if (loc != null) {
+                                        coroutineScope.launch {
+                                            cameraPositionState.animate(
+                                                CameraUpdateFactory.newLatLngZoom(loc, 15f)
+                                            )
+                                        }
+                                    } else {
+                                        coroutineScope.launch {
+                                            snackbarHostState.showSnackbar("Location unavailable")
+                                        }
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MyLocation,
+                                    contentDescription = "Go to my location"
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp)
+                            .align(Alignment.TopCenter),
+                    ) {
+                        // No suggestions content
+                    }
                 }
             }
         }

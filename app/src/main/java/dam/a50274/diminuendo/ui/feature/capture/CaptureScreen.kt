@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -103,6 +105,7 @@ fun CaptureScreen(
             val result = snackbarHostState.showSnackbar(
                 message = "Measurement saved",
                 actionLabel = "View in Diary",
+                duration = SnackbarDuration.Short
             )
             if (result == SnackbarResult.ActionPerformed) {
                 onNavigateToDiary()
@@ -140,11 +143,30 @@ fun CaptureScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
+                .padding(paddingValues),
         ) {
+            if (state.isOffline) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.errorContainer)
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "You are offline. Data will sync when reconnected",
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
             // Top Section: Stats
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -264,16 +286,27 @@ fun CaptureScreen(
                     }
 
                     if (state.averageDb > 0 && !state.isRecording) {
-                        Button(
-                            onClick = { onAction(CaptureAction.SaveMeasurement) },
-                            modifier = Modifier.height(80.dp),
-                        ) {
-                            Text(stringResource(R.string.capture_btn_save))
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Button(
+                                onClick = { onAction(CaptureAction.SaveMeasurement) },
+                                modifier = Modifier.height(80.dp),
+                            ) {
+                                Text(stringResource(R.string.capture_btn_save))
+                            }
+                            if (state.isOffline) {
+                                Text(
+                                    text = "Will sync when back online",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
+    }
     }
 }
 

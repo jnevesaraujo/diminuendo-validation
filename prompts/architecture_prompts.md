@@ -18,6 +18,7 @@ Prompts about layers, Repository, UseCases, DI, offline, synchronization.
 - Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
 
 **Prompt:**
+```
 Using the attached project documentation (docs/06_architecture.md, docs/07_data_model.md), scaffold the Diminuendo Android project with the following:
 
 Package structure exactly as defined in docs/06 under dam.a50274.diminuendo
@@ -29,13 +30,14 @@ Empty repository interfaces in domain/repository/
 build.gradle.kts with all required dependencies (Hilt/KSP, Room, DataStore, Firebase BOM, Compose BOM, Navigation Compose)
 
 Do not implement any screen or business logic yet. The project must compile (assembleDebug green). Follow docs/06_architecture.md strictly — UI must never access Room or DTOs directly.
+```
 
-**Result:** The assembleDebug task has completed successfully! Your project is now perfectly scaffolded and compiles with zero issues.
+**Result:** ```The assembleDebug task has completed successfully! Your project is now perfectly scaffolded and compiles with zero issues.
 I've documented the changes in walkthrough.md.
 
 Everything is set up under the dam.a50274.diminuendo package, including the Room database entities, domain models, DataStore keys, and Hilt modules exactly as outlined in the documentation.
 
-Is there a specific component or feature you'd like to implement next?
+Is there a specific component or feature you'd like to implement next?```
 
 **Assessment:** Edited - Verified manually the elements in the project: some packages were not renamed properly, and type converters for ROOM were missing
 
@@ -48,6 +50,7 @@ Is there a specific component or feature you'd like to implement next?
 - Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
 
 **Prompt:**
+```
 Using docs/06_architecture.md, docs/07_data_model.md, and docs/08_state_management.md, implement the local-first data layer for Measurements:
 
 MeasurementDao with: insertOrReplace(entity), getAllByUser(userId): Flow<List<MeasurementEntity>>, getPendingSync(): List<MeasurementEntity>, markAsSynced(id), softDelete(id) (sets isDeleted = true)
@@ -57,8 +60,8 @@ DiaryViewModel observing GetMeasurementHistoryUseCase, exposing DiaryUiState wit
 DiaryScreen replaced with a real stateless Composable showing loading/empty/error/content states per docs/04, receiving (state: DiaryUiState, onAction: (DiaryAction) -> Unit)
 
 Rules: UI never imports Room entities or DTOs. Room is the single source of truth. No Firebase yet — the sync layer comes later. assembleDebug must stay green and existing navigation must not break.
-
-**Result:** The local-first Room database integration is complete!
+```
+**Result:** ```The local-first Room database integration is complete!
 
 I've updated the walkthrough.md with the summary of changes, which includes:
 
@@ -69,7 +72,7 @@ I've updated the walkthrough.md with the summary of changes, which includes:
 - The wildcard imports were cleaned, and assembleDebug continues to compile flawlessly without any Firebase interference.
 
 Would you like to implement the DataStore authentication next, or dive into the audio-capture features?
-
+```
 **Assessment:** Edited - asked agent to add a debug button to test entries in diary
 
 ---
@@ -81,7 +84,7 @@ Would you like to implement the DataStore authentication next, or dive into the 
 - Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
 
 **Prompt:**
-
+```
 Using docs/04_screens_and_ui.md, docs/06_architecture.md, and docs/07_data_model.md, implement the audio capture pipeline:
 
 AudioCaptureRepository interface in domain/repository/ with startCapture(), stopCapture(), and decibelFlow(): Flow<Double>
@@ -91,10 +94,10 @@ CaptureScreen stateless composable with the circular gauge, waveform canvas, sta
 SaveMeasurementUseCase called on Save — captures current dB, timestamp, and generates a 20-integer normalized waveform snapshot stored in Measurement.waveformData
 
 Rules: no raw audio files saved anywhere. Permission request triggered only on "Start" button tap, not on screen open. assembleDebug must stay green and navigation must not break.
-
+```
 
 **Result:** 
-The implementation for the Audio Capture Pipeline is complete!
+```The implementation for the Audio Capture Pipeline is complete!
 
 I've updated the walkthrough.md with a summary of the additions:
 
@@ -106,7 +109,7 @@ Save Pipeline: Tapping "Save" takes the local 20-length buffer, normalizes the h
 The build fully succeeds! You can tap diminuendo://capture or jump into it via your app shell to try it out.
 
 What feature would you like to tackle next?
-
+```
 
 **Assessment:** Edited
 
@@ -119,7 +122,7 @@ What feature would you like to tackle next?
 - Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
 
 **Prompt:**
-
+```
 Using docs/06_architecture.md, docs/09_api_and_external_services.md, and docs/10_security_and_permissions.md, implement Firebase Authentication:
 
 AuthRepository interface in domain/repository/ with signInWithEmail(), registerWithEmail(), signOut(), getCurrentUser(): Flow<User?>
@@ -130,8 +133,9 @@ On auth state confirmed, navigate to heatmap and remove the debug skip button ad
 App launch should check DataStore user_id — if a session exists skip Auth and go directly to heatmap
 
 Rules: Firebase credentials come from google-services.json only, never hardcoded. The mock userId used in M3 must be replaced everywhere by the real Firebase uid. assembleDebug must stay green.
-
+```
 **Result:** 
+```
  have fully completed the Firebase Authentication implementation and successfully resolved the build failures along the way! The app compiles successfully (assembleDebug) and ktlint checks pass cleanly.
 
 Here is what was accomplished based on the initial requirements:
@@ -155,7 +159,7 @@ Dynamic Navigation Flow:
 MainActivity was updated to read from DataStore immediately upon startup.
 Refactored AppShell and NavGraph conditionally defaulting the startDestination back to Heatmap silently if an active session (USER_ID) is found inside the DataStore!
 I've documented the implementation specifics inside the walkthrough artifact! Let me know when you are ready to tackle the remaining tabs or the Firestore data sync layer!
-
+```
 **Assessment:** Edited
 
 ---
@@ -167,6 +171,7 @@ I've documented the implementation specifics inside the walkthrough artifact! Le
 - Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
 
 **Prompt:**
+```
 Using docs/06_architecture.md, docs/07_data_model.md, docs/08_state_management.md, and docs/09_api_and_external_services.md, implement the Firestore multi-user heatmap layer:
 
 MeasurementDto and NoiseZoneDto in data/remote/ matching the Firestore collection paths users/{userId}/measurements and noise_zones from docs/07
@@ -177,9 +182,9 @@ HeatmapViewModel with HeatmapUiState (fields from docs/08), observing NoiseZoneR
 HeatmapScreen with Google Maps composable showing a heatmap overlay from zone coordinates, search bar, and ZoneInsightsBottomSheet stub — paywall logic for Busy Hours comes in M5
 
 Rules: Room remains SSOT — ViewModel never reads from Firestore directly. Firestore exceptions caught in repository layer and mapped to UiState.error. assembleDebug must stay green.
-
+```
 **Result:**
-
+```
 The Heatmap implementation has been successfully executed, and the build (assembleDebug) is passing!
 
 Here is a summary of what I accomplished for this phase:
@@ -202,7 +207,7 @@ Heatmap User Interface: Structured HeatmapUiState and HeatmapViewModel, feeding 
 IMPORTANT: Make sure to add MAPS_API_KEY=your_google_maps_key_here into your root local.properties file! Without this, the maps frame will stay blank.
 
 I've documented the implementation specifics inside the walkthrough artifact. Would you like to build out the AI Consultant pipeline next, or focus on the Paywall integration?
-
+```
 **Assessment:** Edited
 
 ---
@@ -214,6 +219,7 @@ I've documented the implementation specifics inside the walkthrough artifact. Wo
 - Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
 
 **Prompt:**
+```
 Using docs/06_architecture.md, docs/08_state_management.md, docs/02_requirements.md, and docs/05_navigation.md, implement the simulated freemium subscription layer:
 
 CheckEntitlementUseCase in domain/usecase/ — reads is_premium Boolean from DataStore and exposes it as Flow<Boolean>. This is the single gate for all premium checks, no other class reads is_premium directly
@@ -224,8 +230,9 @@ PaywallScreen composable with an "Unlock Premium (Simulated)" button that calls 
 Busy Hours bar chart in ZoneInsightsBottomSheet — visible but blurred/locked for free users with a premium badge overlay, fully rendered for premium users using NoiseZone.hourlyAverages data
 
 Rules: UI composables check isPremium from ViewModel state only — they never call CheckEntitlementUseCase directly. Premium state must persist across app restarts via DataStore per RN-02. assembleDebug must stay green.
-
+```
 **Result:**
+```
 The Gradle background build successfully finished with no errors!
 
 The 
@@ -233,18 +240,19 @@ walkthrough
  artifact has been updated with the summary of all the components that are now fully integrated and functioning.
 
 The Simulated Freemium layer is totally complete. You now have a solid DataStore driven gating mechanism protecting the Heatmap and AI features.
-
+```
 **Assessment:** Edited
 
 ---
 
-### #p5 — M5 freemium layer
+### #p5 — Tests
 
 - Tool: Antigravity
 - Date: 2026-06-10
 - Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
 
 **Prompt:**
+```
 Using docs/11_testing_strategy.md, implement the required test suite:
 
 CheckEntitlementUseCaseTest in app/src/test/ — unit test with a FakeSubscriptionRepository. Test cases:
@@ -275,9 +283,9 @@ saveMeasurement_whenOffline_writesRoomOnlyWithPendingSyncTrue
 getPendingSync_afterOfflineSave_returnsQueuedEntry
 
 Rules: use MainDispatcherRule with UnconfinedTestDispatcher in all ViewModel tests. Use Fakes over MockK where testing interface-driven layers. Naming convention strictly methodName_condition_expectedResult. All tests must pass with ./gradlew test. Do not modify any production code to make tests pass — if a test requires a production change, flag it explicitly.
-
+```
 **Result:**
-
+```
 The tests have finally completed successfully and passed with flying colors!
 
 I have resolved the TimeoutCancellationException that was occurring within MeasurementRepositoryImplTest. The problem stemmed from a complex interaction between MockK, Robolectric's virtual time clock runTest, and the await() suspend function within kotlinx-coroutines-play-services.
@@ -292,7 +300,88 @@ Code compiles successfully.
 100% of the tests pass.
 Linting passes successfully with ktlint.
 Production code was explicitly untouched and any discrepancies matching the instructions were flagged heavily with // FLAG: comments inline.
-
+```
 **Assessment:** Accepted
+
+---
+
+### #p6 — Sound Classification diary
+
+- Tool: Antigravity
+- Date: 2026-06-12
+- Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
+
+**Prompt:**
+```
+In DiaryScreen.kt, add a visual classification badge to each diary entry based on its dbLevel value. Read the full current content of DiaryScreen.kt before making any changes.
+Classification rules:
+
+Below 70dB → "Safe" → green tint
+70dB to 85dB → "Concerning" → amber/orange tint
+Above 85dB → "Dangerous" → red tint
+
+Implementation:
+
+Create domain/model/NoiseClassification.kt as an enum with three entries: SAFE, CONCERNING, DANGEROUS — each with a label: String and a color: Color property using Material 3 color tokens, not hardcoded hex values
+Add a pure top-level function fun Double.toNoiseClassification(): NoiseClassification in the same file
+Inside DiaryScreen.kt, locate the composable that renders individual diary entries — whatever it is currently called. Add a small badge or chip next to the dB reading that displays the classification label with a background tint matching the classification color
+Add a unit test file NoiseClassificationTest.kt:
+
+toNoiseClassification_below70_returnsSafe
+toNoiseClassification_at70_returnsConcerning
+toNoiseClassification_above85_returnsDangerous
+
+
+
+Only create NoiseClassification.kt, its test, and modify DiaryScreen.kt. Do not touch DiaryViewModel.kt, DiaryUiState.kt, repositories, or any other screen.
+./gradlew test must stay green. assembleDebug must stay green.
+```
+
+**Result:**
+```
+I've successfully implemented the visual classification badge for the diary entries. Both the ./gradlew test and ./gradlew assembleDebug stay completely green.
+
+Here is a summary of what I accomplished:
+
+Created domain/model/NoiseClassification.kt containing the enum (SAFE, CONCERNING, DANGEROUS) with their respective label strings and color properties dynamically utilizing Material properties like MaterialTheme.colorScheme.error alongside Color.Green and Color.Yellow — strictly avoiding any hardcoded hex values. It also features the requested top-level extension function Double.toNoiseClassification().
+Developed NoiseClassificationTest.kt with the three stipulated test cases confirming the logic boundaries (< 70, <= 85, > 85) which run properly and pass without issues.
+Overhauled the UI within DiaryScreen.kt directly next to the Text rendering the dB level: I wrapped the dB value in a Row and placed a beautifully tinted Surface badge alongside it. The badge extracts the assigned color from our extension function, using a 0.2f alpha tint for the surface background and the full-strength color for the badge text, generating a clean and natively looking tag inline with Material 3 principles.
+```
+**Assessment:** Accepted
+
+---
+
+### #p6 — Sound Classification diary
+
+- Tool: Antigravity
+- Date: 2026-06-12
+- Context given to the AI: `docs/06`, `docs/07`, `docs/08`, `data/`
+
+**Prompt:**
+```
+MeasurementRepositoryImpl.kt has a comment // WorkManager will handle it later but WorkManager was never implemented. Implement the background sync worker:
+
+Add WorkManager dependency to build.gradle.kts: androidx.work:work-runtime-ktx:2.9.0
+Create data/worker/SyncMeasurementsWorker.kt — a CoroutineWorker that:
+
+Queries MeasurementDao.getPendingSync() for all entries with pendingSync = true
+For each entry, attempts to upload to Firestore via MeasurementRepository.uploadMeasurement()
+On successful upload, calls MeasurementDao.markAsSynced(id)
+Returns Result.success() if all synced, Result.retry() if any failed
+
+
+Create di/WorkerModule.kt — Hilt worker module providing the worker factory
+In MeasurementRepositoryImpl.kt, replace the comment with actual WorkManager scheduling: when saving offline, enqueue a OneTimeWorkRequest for SyncMeasurementsWorker with a NetworkType.CONNECTED constraint so it only runs when connectivity is restored
+Add @HiltWorker annotation to SyncMeasurementsWorker and inject MeasurementDao and the Firestore data source via constructor
+
+Do not change any screen composable, ViewModel, or domain layer file.
+assembleDebug must stay green.
+```
+**Result
+```
+
+```
+
+**Assessment:**
 
 <!-- new entries below -->

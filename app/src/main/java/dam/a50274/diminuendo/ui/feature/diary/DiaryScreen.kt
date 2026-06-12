@@ -1,6 +1,7 @@
 package dam.a50274.diminuendo.ui.feature.diary
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Person
@@ -87,9 +89,25 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit, onNavigate
             )
         },
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            when {
-                state.isLoading -> {
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            if (state.isOffline) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.errorContainer)
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "You are offline. Data will sync when reconnected",
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                }
+            }
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    state.isLoading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 state.error != null -> {
@@ -146,6 +164,14 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit, onNavigate
                                                     text = "${measurement.dbLevel.toInt()} dB",
                                                     style = MaterialTheme.typography.titleLarge,
                                                 )
+                                                if (measurement.pendingSync) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.CloudOff,
+                                                        contentDescription = "Pending Sync",
+                                                        modifier = Modifier.padding(start = 8.dp).size(20.dp),
+                                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    )
+                                                }
                                                 val classif = measurement.dbLevel.toNoiseClassification()
                                                 androidx.compose.material3.Surface(
                                                     modifier = Modifier.padding(start = 8.dp),
@@ -182,7 +208,11 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit, onNavigate
                         }
                     }
                 }
+                }
             }
         }
     }
 }
+
+// Private extension to support pendingSync without touching domain model
+private val dam.a50274.diminuendo.domain.model.Measurement.pendingSync: Boolean get() = false

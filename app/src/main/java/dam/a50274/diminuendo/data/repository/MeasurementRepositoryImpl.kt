@@ -36,7 +36,15 @@ class MeasurementRepositoryImpl @Inject constructor(
         dao.insertOrReplace(measurement.toEntity(pendingSync = true))
 
         if (!isOnline()) {
-            return // Skip network call if offline, WorkManager will handle it later
+            val workRequest = androidx.work.OneTimeWorkRequestBuilder<dam.a50274.diminuendo.data.worker.SyncMeasurementsWorker>()
+                .setConstraints(
+                    androidx.work.Constraints.Builder()
+                        .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED)
+                        .build()
+                )
+                .build()
+            androidx.work.WorkManager.getInstance(context).enqueue(workRequest)
+            return
         }
 
         try {
