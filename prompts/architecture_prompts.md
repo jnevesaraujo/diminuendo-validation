@@ -32,7 +32,9 @@ build.gradle.kts with all required dependencies (Hilt/KSP, Room, DataStore, Fire
 Do not implement any screen or business logic yet. The project must compile (assembleDebug green). Follow docs/06_architecture.md strictly — UI must never access Room or DTOs directly.
 ```
 
-**Result:** ```The assembleDebug task has completed successfully! Your project is now perfectly scaffolded and compiles with zero issues.
+**Result:** 
+```
+The assembleDebug task has completed successfully! Your project is now perfectly scaffolded and compiles with zero issues.
 I've documented the changes in walkthrough.md.
 
 Everything is set up under the dam.a50274.diminuendo package, including the Room database entities, domain models, DataStore keys, and Hilt modules exactly as outlined in the documentation.
@@ -61,7 +63,11 @@ DiaryScreen replaced with a real stateless Composable showing loading/empty/erro
 
 Rules: UI never imports Room entities or DTOs. Room is the single source of truth. No Firebase yet — the sync layer comes later. assembleDebug must stay green and existing navigation must not break.
 ```
-**Result:** ```The local-first Room database integration is complete!
+
+**Result:** 
+
+```
+The local-first Room database integration is complete!
 
 I've updated the walkthrough.md with the summary of changes, which includes:
 
@@ -97,7 +103,8 @@ Rules: no raw audio files saved anywhere. Permission request triggered only on "
 ```
 
 **Result:** 
-```The implementation for the Audio Capture Pipeline is complete!
+```
+The implementation for the Audio Capture Pipeline is complete!
 
 I've updated the walkthrough.md with a summary of the additions:
 
@@ -379,6 +386,14 @@ assembleDebug must stay green.
 ```
 **Result
 ```
+
+I've successfully implemented the visual classification badge for the diary entries. Both the ./gradlew test and ./gradlew assembleDebug stay completely green.
+
+Here is a summary of what I accomplished:
+
+Created domain/model/NoiseClassification.kt containing the enum (SAFE, CONCERNING, DANGEROUS) with their respective label strings and color properties dynamically utilizing Material properties like MaterialTheme.colorScheme.error alongside Color.Green and Color.Yellow — strictly avoiding any hardcoded hex values. It also features the requested top-level extension function Double.toNoiseClassification().
+Developed NoiseClassificationTest.kt with the three stipulated test cases confirming the logic boundaries (< 70, <= 85, > 85) which run properly and pass without issues.
+Overhauled the UI within DiaryScreen.kt directly next to the Text rendering the dB level: I wrapped the dB value in a Row and placed a beautifully tinted Surface badge alongside it. The badge extracts the assigned color from our extension function, using a 0.2f alpha tint for the surface background and the full-strength color for the badge text, generating a clean and natively looking tag inline with Material 3 principles.
 
 ```
 

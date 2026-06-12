@@ -5,7 +5,7 @@
 -->
 
 <!-- Replace X and Title -->
-# Assignment `Title`
+# Assignment `Final Project: Diminuendo App`
 
 **Course:**  Mobile Application Development (DAM)
 
@@ -19,7 +19,7 @@
 
 **Student GitHub:** `https://github.com/ISEL-LEIM-DAM-SV2526/final-project-jnevesaraujo`
 
-**Date:** `delivery date`
+**Date:** `June 14, 2026`
 
 
 # <App Name>
