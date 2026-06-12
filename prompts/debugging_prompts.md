@@ -24,9 +24,12 @@ Add a temporary "Skip Auth (Debug)" TextButton to the Auth placeholder screen th
 The deep link diminuendo://capture fails with "unable to resolve Intent". The NavGraph may have the deep link declared but the AndroidManifest.xml is missing the corresponding <intent-filter> on the MainActivity. Add the intent filter to the manifest. Do not change any other file. Verify the adb command adb shell am start -W -a android.intent.action.VIEW -d "diminuendo://capture" dam.a50274.diminuendo resolves correctly after the fix.
 ```
 **Identified cause:** Placeholder auth screen doesn't allow navigation to test remaining ones and deep link is failing.
-**Fix:** ```The assembleDebug background task just finished, and the build remains completely green! The new Android manifest intent filter and the Debug button are working perfectly without causing any compilation issues.
+**Fix:** 
+```
+The assembleDebug background task just finished, and the build remains completely green! The new Android manifest intent filter and the Debug button are working perfectly without causing any compilation issues.
 
-Everything is in place. You should now be able to run that adb shell am start command in your local environment and see it immediately route to the empty Capture screen. Let me know what you'd like to work on next!```
+Everything is in place. You should now be able to run that adb shell am start command in your local environment and see it immediately route to the empty Capture screen. Let me know what you'd like to work on next!
+```
 **Did the AI get the cause right?** yes
 
 ---
@@ -47,7 +50,10 @@ Please refactor AuthViewModel.kt to address the following issues caught during v
 2. Do not expose raw Firebase exception messages. In the catch block, parse the Exception (or check FirebaseAuth exceptions) and map them to user-friendly error strings instead of directly using e.message.
 ```
 **Identified cause:** Missing some elements in repository and viewmodel
-**Fix:** ```Everything is compiling and the build is green (assembleDebug finished successfully). Let me know what you would like to work on next!	```
+**Fix:** 
+```
+Everything is compiling and the build is green (assembleDebug finished successfully). Let me know what you would like to work on next!	
+```
 **Did the AI get the cause right?** yes
 
 ---
@@ -65,7 +71,10 @@ Please refactor MeasurementRepositoryImpl.kt to comply with the remaining verifi
 2. The current catch block ignores the exception. We need to handle FirebaseFirestoreException properly. Since this is a Repository, modify the catch block to throw a custom domain exception or pass a result so that the ViewModel can catch it and map it to a user-friendly UiState.error string (instead of silently ignoring it or re-throwing raw Firebase exceptions).
 ```
 **Identified cause:** Agent didn't implement doc requirements
-**Fix:** ```I have refactored the files as requested. The verification rules have now been implemented. I ran another assembleDebug build and the changes compiled perfectly. Let me know if we are clear to proceed with the next step!```
+**Fix:** 
+```
+I have refactored the files as requested. The verification rules have now been implemented. I ran another assembleDebug build and the changes compiled perfectly. Let me know if we are clear to proceed with the next step!
+```
 **Did the AI get the cause right?** yes
 
 ---
@@ -82,11 +91,12 @@ Please refactor NoiseZoneRepositoryImpl.kt to comply with the third verification
 1. Remove the Firebase snapshot listener from the init {} block. It causes a memory leak because it is never closed.
 2. Implement a dedicated private or internal function (or integrate it directly into the Flow pipeline) using callbackFlow { ... } to listen to the "noise_zones" collection.
 3. Store the ListenerRegistration returned by addSnapshotListener, and inside the awaitClose block of the callbackFlow, explicitly call listener.remove() so that the listener is properly cleared when the coroutine scope is cancelled.
-4. Let``` the callbackFlow collect and trigger the Room DAO database insertion safely within its own active lifetime.
-
+4. Let the callbackFlow collect and trigger the Room DAO database insertion safely within its own active lifetime.
+```
 **Identified cause:** Agent didn't implement doc requirements
 **Fix:** 
-```The NoiseZoneRepositoryImpl has been fully refactored, and the build was successful! This enforces strong lifecycle adherence—preventing the memory leak while still automatically bridging remote snapshots cleanly into your Room SSOT architecture whenever the UI collects from this flow.
+```
+The NoiseZoneRepositoryImpl has been fully refactored, and the build was successful! This enforces strong lifecycle adherence—preventing the memory leak while still automatically bridging remote snapshots cleanly into your Room SSOT architecture whenever the UI collects from this flow.
 
 Let me know if there's anything else you'd like to implement or review for the Heatmap layer!
 ```
@@ -109,7 +119,8 @@ Let me know if there's anything else you'd like to implement or review for the H
 ```
 **Identified cause:** Agent didn't implement doc requirements
 **Fix:** 
-```The build has completed successfully!
+```
+The build has completed successfully!
 
 The HeatmapViewModel is now cleanly injecting the isolated NetworkMonitor, combining the isOnline stream with the getNoiseZones Room database stream. This guarantees that your HeatmapUiState flawlessly and reactively captures both offline/online status transitions and local data snapshots simultaneously.
 ```
@@ -124,13 +135,16 @@ The HeatmapViewModel is now cleanly injecting the isolated NetworkMonitor, combi
 
 **Prompt:**
 
-```Please refactor HeatmapScreen.kt to fulfill the final verification requirement:
+```
+Please refactor HeatmapScreen.kt to fulfill the final verification requirement:
 
 1. Implement a BottomSheet layout (such as ModalBottomSheet or using a BottomSheetScaffold) inside the HeatmapScreen.
 2. Inside this bottom sheet, add a placeholder/stub text or layout representing the "Busy Hours" feature for the selected noise zone, even if the data logic is not fully wired yet.
 ```
 **Identified cause:** Agent didn't implement doc requirements
-**Fix:** ```The build has completed successfully!
+**Fix:** 
+```
+The build has completed successfully!
 
 The HeatmapViewModel is now cleanly injecting the isolated NetworkMonitor, combining the isOnline stream with the getNoiseZones Room database stream. This guarantees that your HeatmapUiState flawlessly and reactively captures both offline/online status transitions and local data snapshots simultaneously.
 ```
@@ -157,7 +171,8 @@ Do not change any other feature. assembleDebug must stay green.
 ```
 **Identified cause:** Agent didn't implement doc requirements
 **Fix:** 
-```The catch operator is now correctly imported and gracefully handles any GPS timeout or security issues natively within Coroutines Flow, guaranteeing that you won't ever see that IllegalStateException: Flow exception transparency is violated crash again when the coroutine is cancelled.
+```
+The catch operator is now correctly imported and gracefully handles any GPS timeout or security issues natively within Coroutines Flow, guaranteeing that you won't ever see that IllegalStateException: Flow exception transparency is violated crash again when the coroutine is cancelled.
 
 Both assembleDebug and ktlintCheck are perfectly green, and your app is fully stable.
 
@@ -174,7 +189,8 @@ You should be good to test saving a measurement now!
 
 **Prompt:**
 
-```Using docs/09_api_and_external_services.md, docs/04_screens_and_ui.md, and docs/08_state_management.md, implement the Gemini AI consultant screen:
+```
+Using docs/09_api_and_external_services.md, docs/04_screens_and_ui.md, and docs/08_state_management.md, implement the Gemini AI consultant screen:
 
 AiRepository interface in domain/repository/ with sendMessage(prompt: String, context: String): Flow<String> — streaming response
 AiRepositoryImpl in data/remote/ using the firebase-vertexai SDK with model gemini-2.5-flash. Build the context string from the user's last 10 Measurement records fetched from Room — format as a readable summary of dB levels, times and locations
@@ -186,7 +202,8 @@ Rules: Gemini key is accessed via Firebase Vertex AI only, never via BuildConfig
 ```
 **Identified cause:** Agent didn't implement doc requirements
 **Fix:** 
-```the background compilation has successfully completed (BUILD SUCCESSFUL in 1m 2s), and both assembleDebug and your stringent ktlintCheck are perfectly green!
+```
+the background compilation has successfully completed (BUILD SUCCESSFUL in 1m 2s), and both assembleDebug and your stringent ktlintCheck are perfectly green!
 
 Everything related to the Gemini AI Consultant Feature is fully completed and built strictly around the official Google AI Studio client per your instruction.
 ```
@@ -212,7 +229,8 @@ Do not change any build logic. The goal is a green CI run.
 ```
 **Identified cause:** Git CI Failure, outdated node.js
 **Fix:** 
-```I've updated the .github/workflows/android.yml file to address the Node.js 20 deprecation warnings in the CI.
+```
+I've updated the .github/workflows/android.yml file to address the Node.js 20 deprecation warnings in the CI.
 
 Specifically, I've made the following changes:
 
@@ -242,7 +260,8 @@ Do not change any Kotlin source files or business logic. Run ./gradlew lintDebug
 ```
 **Identified cause:** Git CI Failure, outdated node.js
 **Fix:** 
-```I've successfully applied all of the requested changes without touching any Kotlin source files, and tests remain green.
+```
+I've successfully applied all of the requested changes without touching any Kotlin source files, and tests remain green.
 
 Here is a summary of what I did:
 
@@ -276,7 +295,8 @@ assembleDebug must stay green.
 ```
 **Identified cause:** Label hardcoded in the capture view model
 **Fix:** 
-```I've updated CaptureViewModel.kt to perform reverse geocoding to resolve a human-readable location!
+```
+I've updated CaptureViewModel.kt to perform reverse geocoding to resolve a human-readable location!
 
 Here is a summary of what was done:
 
@@ -311,7 +331,8 @@ assembleDebug must stay green.
 ```
 **Identified cause:** Label hardcoded in the heatmap screen
 **Fix:** 
-```I've successfully updated the bottom sheet on the Heatmap screen to display a real bar chart representation of the zone's hourlyAverages!
+```
+I've successfully updated the bottom sheet on the Heatmap screen to display a real bar chart representation of the zone's hourlyAverages!
 
 Here is a summary of what I did:
 
@@ -347,7 +368,8 @@ assembleDebug must stay green.
 ```
 **Identified cause:** not identified and not solved
 **Fix:** 
-```All TopAppBars have been unified successfully across the 5 main screens (ProfileScreen, HeatmapScreen, CaptureScreen, DiaryScreen, and AiConsultantScreen).
+```
+All TopAppBars have been unified successfully across the 5 main screens (ProfileScreen, HeatmapScreen, CaptureScreen, DiaryScreen, and AiConsultantScreen).
 
 Here's a summary of the UI fixes implemented:
 
@@ -379,7 +401,8 @@ assembleDebug must stay green.
 ```
 **Identified cause:** cause included in the prompt
 **Fix:** 
-```he excessive padding bug caused by the double application of status bar insets has been resolved!
+```
+The excessive padding bug caused by the double application of status bar insets has been resolved!
 
 I updated the TopAppBar definition in the following screens to pass windowInsets = WindowInsets(0):
 
@@ -416,7 +439,8 @@ assembleDebug must stay green.
 ```
 **Identified cause:** cause included in the prompt
 **Fix:** 
-```The location search bar on the Heatmap screen has been successfully upgraded!
+```
+The location search bar on the Heatmap screen has been successfully upgraded!
 
 I replaced the generic TextField with the native Material 3 DockedSearchBar. This correctly achieves the modern, pill-shaped aesthetic out-of-the-box (including the subtle default elevation shadow so it pops cleanly off the map). It is precisely aligned to the TopCenter of the map using the 16.dp horizontal and 8.dp top padding you specified. The placeholder uses the proper ellipsis character "Search location…" and the query submission invokes the pre-existing map camera zoom resolution logic.
 
@@ -445,7 +469,8 @@ assembleDebug must stay green.
 ```
 **Identified cause:** cause included in the prompt
 **Fix:** 
-```The map interactions on the Heatmap screen are fully implemented and verified!
+```
+The map interactions on the Heatmap screen are fully implemented and verified!
 
 I have updated the UI and ViewModel states to properly handle these interactions:
 
@@ -482,7 +507,9 @@ assembleDebug must stay green.
 ```
 
 **Identified cause:** cause included in the prompt
-**Fix:** ```The decibel reading calculation issue in AudioCaptureRepositoryImpl.kt has been fixed successfully.
+**Fix:** 
+```
+The decibel reading calculation issue in AudioCaptureRepositoryImpl.kt has been fixed successfully.
 
 I updated the amplitude-to-dB conversion flow strictly following your calculations. The code now:
 
