@@ -32,8 +32,8 @@ private val LightColorScheme = lightColorScheme(
     tertiary = LightAmethyst,
     background = SoftWhite,
     surface = SurfaceLightGray,
-    onPrimary = LightText,
-    onSecondary = LightText,
+    onPrimary = SoftWhite,
+    onSecondary = SoftWhite,
     onBackground = LightText,
     onSurface = LightText,
 )
