@@ -9,6 +9,7 @@ import dam.a50274.diminuendo.data.local.MeasurementDao
 import dam.a50274.diminuendo.data.mapper.toDomain
 import dam.a50274.diminuendo.data.mapper.toDto
 import dam.a50274.diminuendo.data.mapper.toEntity
+import dam.a50274.diminuendo.data.remote.NoiseZoneDto
 import dam.a50274.diminuendo.data.worker.SyncMeasurementsWorker
 import dam.a50274.diminuendo.domain.model.Measurement
 import dam.a50274.diminuendo.domain.model.SyncException
@@ -83,15 +84,15 @@ class MeasurementRepositoryImpl @Inject constructor(
                         val newAverages = averages.toMutableList()
                         newAverages[hour] = ((averages[hour] * total) + measurement.dbLevel) / newTotal
 
-                        val updateData = mapOf(
-                            "locationId" to locationId,
-                            "centerLatitude" to lat,
-                            "centerLongitude" to lng,
-                            "totalContributions" to newTotal.toInt(),
-                            "hourlyAverages" to newAverages,
+                        val updatedZone = NoiseZoneDto(
+                            locationId = locationId,
+                            centerLatitude = lat,
+                            centerLongitude = lng,
+                            locationName = measurement.locationName.ifBlank { "Zone $locationId" },
+                            hourlyAverages = newAverages,
+                            totalContributions = newTotal.toInt(),
                         )
-
-                        transaction.set(zoneRef, updateData)
+                        transaction.set(zoneRef, updatedZone)
                     }.await()
                 }
 

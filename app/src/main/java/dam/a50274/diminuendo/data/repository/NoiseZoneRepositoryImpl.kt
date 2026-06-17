@@ -7,6 +7,8 @@ import dam.a50274.diminuendo.data.mapper.toEntity
 import dam.a50274.diminuendo.data.remote.NoiseZoneDto
 import dam.a50274.diminuendo.domain.model.NoiseZone
 import dam.a50274.diminuendo.domain.repository.NoiseZoneRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -23,15 +25,11 @@ class NoiseZoneRepositoryImpl @Inject constructor(
         val syncFlow = callbackFlow {
             val listener = firestore.collection("noise_zones")
                 .addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        return@addSnapshotListener
-                    }
-
-                    if (snapshot != null) {
-                        val dtos = snapshot.toObjects(NoiseZoneDto::class.java)
-                        launch {
-                            noiseZoneDao.insertAll(dtos.map { it.toEntity() })
-                        }
+                    if (error != null || snapshot == null) return@addSnapshotListener
+                    val dtos = snapshot.toObjects(NoiseZoneDto::class.java)
+                    // Use a stable scope not tied to the collector's lifetime
+                    CoroutineScope(Dispatchers.IO).launch {
+                        noiseZoneDao.insertAll(dtos.map { it.toEntity() })
                     }
                 }
 

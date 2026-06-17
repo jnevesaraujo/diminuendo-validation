@@ -44,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dam.a50274.diminuendo.R
 import dam.a50274.diminuendo.domain.model.toNoiseClassification
+import dam.a50274.diminuendo.ui.components.toColor
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -173,9 +174,10 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit, onNavigate
                                                         )
                                                     }
                                                     val classif = measurement.dbLevel.toNoiseClassification()
+                                                    val color = classif.toColor()
                                                     androidx.compose.material3.Surface(
                                                         modifier = Modifier.padding(start = 8.dp),
-                                                        color = classif.color.copy(alpha = 0.2f),
+                                                        color = color.copy(alpha = 0.2f),
                                                         shape = MaterialTheme.shapes.small,
                                                     ) {
                                                         Text(
@@ -185,7 +187,7 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit, onNavigate
                                                                 vertical = 2.dp,
                                                             ),
                                                             style = MaterialTheme.typography.labelSmall,
-                                                            color = classif.color,
+                                                            color = color,
                                                         )
                                                     }
                                                 }
@@ -216,6 +218,3 @@ fun DiaryScreen(state: DiaryUiState, onAction: (DiaryAction) -> Unit, onNavigate
         }
     }
 }
-
-// Private extension to support pendingSync without touching domain model
-private val dam.a50274.diminuendo.domain.model.Measurement.pendingSync: Boolean get() = false

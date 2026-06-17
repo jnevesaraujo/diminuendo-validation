@@ -8,15 +8,6 @@ enum class NoiseClassification(val label: String) {
     SAFE("Safe"),
     CONCERNING("Concerning"),
     DANGEROUS("Dangerous"),
-    ;
-
-    val color: Color
-        @Composable
-        get() = when (this) {
-            SAFE -> Color.Green
-            CONCERNING -> Color.Yellow
-            DANGEROUS -> MaterialTheme.colorScheme.error
-        }
 }
 
 fun Double.toNoiseClassification(): NoiseClassification {

@@ -14,6 +14,7 @@ import dam.a50274.diminuendo.domain.model.SyncException
 import dam.a50274.diminuendo.domain.repository.AudioCaptureRepository
 import dam.a50274.diminuendo.domain.repository.LocationRepository
 import dam.a50274.diminuendo.domain.usecase.SaveMeasurementUseCase
+import dam.a50274.diminuendo.domain.util.NetworkMonitor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -34,6 +35,7 @@ class CaptureViewModel @Inject constructor(
     private val saveMeasurementUseCase: SaveMeasurementUseCase,
     private val locationRepository: LocationRepository,
     private val dataStore: DataStore<Preferences>,
+    private val networkMonitor: NetworkMonitor,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
@@ -53,6 +55,11 @@ class CaptureViewModel @Inject constructor(
         viewModelScope.launch {
             dataStore.data.collect { prefs ->
                 currentUserId = prefs[PreferencesKeys.USER_ID] ?: ""
+            }
+        }
+        viewModelScope.launch {
+            networkMonitor.isOnline.collect { isOnline ->
+                _uiState.update { it.copy(isOffline = !isOnline) }
             }
         }
     }
@@ -201,12 +208,14 @@ class CaptureViewModel @Inject constructor(
                 saveMeasurementUseCase(measurement)
                 _uiState.update { it.copy(saveSuccess = true) }
             } catch (e: Exception) {
-                val errorMsg = if (e is SyncException) {
-                    "Measurement saved locally but failed to sync: ${e.message}"
+                if (e is SyncException) {
+                    // Local save succeeded; only remote sync failed
+                    _uiState.update { it.copy(saveSuccess = true) } // Show success snackbar
+                    // Optionally show a secondary warning via a separate event channel
                 } else {
-                    e.message ?: "Failed to save measurement"
+                    // Total failure — local save also failed
+                    _uiState.update { it.copy(error = e.message ?: "Failed to save measurement") }
                 }
-                _uiState.update { it.copy(error = errorMsg, saveSuccess = true) } // Still successful locally
             }
         }
     }

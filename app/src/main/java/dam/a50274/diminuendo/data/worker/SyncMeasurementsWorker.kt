@@ -10,6 +10,7 @@ import dagger.assisted.AssistedInject
 import dam.a50274.diminuendo.data.local.MeasurementDao
 import dam.a50274.diminuendo.data.mapper.toDomain
 import dam.a50274.diminuendo.data.mapper.toDto
+import dam.a50274.diminuendo.data.remote.NoiseZoneDto
 import kotlinx.coroutines.tasks.await
 import java.util.Calendar
 
@@ -60,15 +61,15 @@ class SyncMeasurementsWorker @AssistedInject constructor(
                         val newAverages = averages.toMutableList()
                         newAverages[hour] = ((averages[hour] * total) + measurement.dbLevel) / newTotal
 
-                        val updateData = mapOf(
-                            "locationId" to locationId,
-                            "centerLatitude" to lat,
-                            "centerLongitude" to lng,
-                            "totalContributions" to newTotal.toInt(),
-                            "hourlyAverages" to newAverages,
+                        val updatedZone = NoiseZoneDto(
+                            locationId = locationId,
+                            centerLatitude = lat,
+                            centerLongitude = lng,
+                            locationName = measurement.locationName.ifBlank { "Zone $locationId" },
+                            hourlyAverages = newAverages,
+                            totalContributions = newTotal.toInt(),
                         )
-
-                        transaction.set(zoneRef, updateData)
+                        transaction.set(zoneRef, updatedZone)
                     }.await()
                 }
 

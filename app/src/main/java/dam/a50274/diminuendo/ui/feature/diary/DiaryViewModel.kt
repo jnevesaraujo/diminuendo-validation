@@ -10,9 +10,11 @@ import dam.a50274.diminuendo.domain.model.Measurement
 import dam.a50274.diminuendo.domain.usecase.DeleteMeasurementUseCase
 import dam.a50274.diminuendo.domain.usecase.GetMeasurementHistoryUseCase
 import dam.a50274.diminuendo.domain.usecase.SaveMeasurementUseCase
+import dam.a50274.diminuendo.domain.util.NetworkMonitor
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -27,31 +29,27 @@ class DiaryViewModel @Inject constructor(
     private val deleteMeasurementUseCase: DeleteMeasurementUseCase,
     private val saveMeasurementUseCase: SaveMeasurementUseCase,
     private val dataStore: DataStore<Preferences>,
+    private val networkMonitor: NetworkMonitor,
 ) : ViewModel() {
 
-    val uiState: StateFlow<DiaryUiState> = dataStore.data
-        .map { it[PreferencesKeys.USER_ID] ?: "" }
-        .flatMapLatest { userId ->
-            if (userId.isEmpty()) {
-                flowOf(DiaryUiState(isLoading = false, error = "Not authenticated"))
-            } else {
-                getMeasurementHistoryUseCase(userId).map { measurements ->
-                    DiaryUiState(
-                        isLoading = false,
-                        measurements = measurements,
-                        error = null,
-                    )
+    val uiState: StateFlow<DiaryUiState> = combine(
+        dataStore.data
+            .map { it[PreferencesKeys.USER_ID] ?: "" }
+            .flatMapLatest { userId ->
+                if (userId.isEmpty()) flowOf(DiaryUiState(isLoading = false, error = "Not authenticated"))
+                else getMeasurementHistoryUseCase(userId).map { measurements ->
+                    DiaryUiState(isLoading = false, measurements = measurements)
                 }
             }
-        }
-        .catch { e ->
-            emit(DiaryUiState(isLoading = false, error = e.message ?: "Unknown error"))
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = DiaryUiState(isLoading = true),
-        )
+            .catch { e -> emit(DiaryUiState(isLoading = false, error = e.message ?: "Unknown error")) },
+        networkMonitor.isOnline,
+    ) { diaryState, isOnline ->
+        diaryState.copy(isOffline = !isOnline)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = DiaryUiState(isLoading = true),
+    )
 
     fun onAction(action: DiaryAction) {
         when (action) {

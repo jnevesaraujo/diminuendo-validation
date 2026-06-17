@@ -18,9 +18,11 @@ class FakeSubscriptionRepository : SubscriptionRepository {
     override fun getAiDailyCount(): Flow<Int> = aiDailyCountState
 
     override suspend fun incrementAiDailyCount(newDate: Long?) {
-        aiDailyCountState.value += 1
         if (newDate != null) {
+            aiDailyCountState.value = 1  // Reset to 1 (first use of new day)
             aiCountResetDateState.value = newDate
+        } else {
+            aiDailyCountState.value += 1
         }
     }
 

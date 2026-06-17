@@ -14,6 +14,7 @@ fun MeasurementEntity.toDomain(): Measurement {
         longitude = this.longitude,
         contextTag = this.contextTag,
         locationName = this.locationName,
+        pendingSync = this.pendingSync,
     )
 }
 
