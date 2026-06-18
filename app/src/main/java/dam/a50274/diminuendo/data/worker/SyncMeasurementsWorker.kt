@@ -24,9 +24,7 @@ class SyncMeasurementsWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         val pending = dao.getPendingSync()
-        if (pending.isEmpty()) {
-            return Result.success()
-        }
+        if (pending.isEmpty()) return Result.success()
 
         var anyFailed = false
 
@@ -34,33 +32,39 @@ class SyncMeasurementsWorker @AssistedInject constructor(
             try {
                 val measurement = entity.toDomain()
 
-                // Upload Measurement
-                firestore.collection("users")
+                // 1. Upload the measurement document.
+                firestore
+                    .collection("users")
                     .document(measurement.userId)
                     .collection("measurements")
                     .document(measurement.id)
                     .set(measurement.toDto())
                     .await()
 
+                // 2. Update the noise_zones aggregate if we have coordinates.
                 if (measurement.latitude != null && measurement.longitude != null) {
                     val lat = Math.round(measurement.latitude * 100.0) / 100.0
                     val lng = Math.round(measurement.longitude * 100.0) / 100.0
                     val locationId = "zone_${lat}_$lng"
-
                     val zoneRef = firestore.collection("noise_zones").document(locationId)
 
                     firestore.runTransaction { transaction ->
                         val snapshot = transaction.get(zoneRef)
                         val total = snapshot.getLong("totalContributions") ?: 0L
-                        val averages = snapshot.get("hourlyAverages") as? List<Double> ?: List(24) { 0.0 }
 
-                        val cal = Calendar.getInstance().apply { timeInMillis = measurement.timestamp }
+                        val existingAverages = readHourlyAverages(snapshot.get("hourlyAverages"))
+
+                        val cal = Calendar.getInstance().apply {
+                            timeInMillis = measurement.timestamp
+                        }
                         val hour = cal.get(Calendar.HOUR_OF_DAY)
 
                         val newTotal = total + 1
-                        val newAverages = averages.toMutableList()
-                        newAverages[hour] = ((averages[hour] * total) + measurement.dbLevel) / newTotal
+                        val newAverages = existingAverages.toMutableList()
+                        newAverages[hour] =
+                            ((existingAverages[hour] * total) + measurement.dbLevel) / newTotal
 
+                        // Write a typed NoiseZoneDto — never a raw Map.
                         val updatedZone = NoiseZoneDto(
                             locationId = locationId,
                             centerLatitude = lat,
@@ -73,13 +77,36 @@ class SyncMeasurementsWorker @AssistedInject constructor(
                     }.await()
                 }
 
+                // 3. Mark synced in Room only after both writes succeed.
                 dao.markAsSynced(measurement.id)
             } catch (e: Exception) {
                 e.printStackTrace()
                 anyFailed = true
+                // Continue processing remaining entries — don't abort the whole batch.
             }
         }
 
         return if (anyFailed) Result.retry() else Result.success()
+    }
+
+    /**
+     * Safely converts whatever Firestore returns for hourlyAverages into
+     * a clean List<Double> of exactly 24 elements.
+     */
+    private fun readHourlyAverages(raw: Any?): List<Double> {
+        val list: List<Double> = when (raw) {
+            is List<*> -> raw.map { element ->
+                when (element) {
+                    is Double -> element
+                    is Long -> element.toDouble()
+                    is Int -> element.toDouble()
+                    is Number -> element.toDouble()
+                    else -> 0.0
+                }
+            }
+            else -> emptyList()
+        }
+        return if (list.size == 24) list
+        else List(24) { i -> list.getOrElse(i) { 0.0 } }
     }
 }
