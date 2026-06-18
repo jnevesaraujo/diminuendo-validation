@@ -120,7 +120,7 @@ fun CaptureScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                            painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = null,
                             modifier = Modifier.padding(end = 8.dp).size(28.dp),
                         )

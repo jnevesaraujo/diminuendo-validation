@@ -44,4 +44,9 @@ class LocationRepositoryImpl @Inject constructor(
         }
         emit(location)
     }.catch { emit(null) }
+    // Using the Flow.catch operator instead of try/catch inside the flow builder.
+    // A try/catch block inside flow {} catches AbortFlowException (the internal
+    // cancellation signal) and then trying to emit(null) inside catch {} violates
+    // flow transparency and causes a fatal crash. Flow.catch() is exempted from
+    // this restriction and handles the error safely.
 }

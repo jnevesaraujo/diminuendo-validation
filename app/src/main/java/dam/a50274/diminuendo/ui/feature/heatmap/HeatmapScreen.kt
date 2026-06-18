@@ -27,6 +27,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -130,7 +131,7 @@ fun HeatmapScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                            painter = painterResource(id = R.mipmap.ic_launcher_foreground),
                             contentDescription = null,
                             modifier = Modifier.padding(end = 8.dp).size(28.dp),
                         )
@@ -231,17 +232,32 @@ fun HeatmapScreen(
                             )
                         }
                         if (state.noiseZones.isNotEmpty()) {
-                            val provider = HeatmapTileProvider.Builder()
-                                .weightedData(
-                                    state.noiseZones.map {
+                            // Use the total contribution count as a stable key so the TileOverlay
+                            // is fully recreated whenever the underlying data changes.
+                            val zoneKey = state.noiseZones.sumOf { it.totalContributions }
+
+                            key(zoneKey) {
+                                val provider = remember(zoneKey) {
+                                    // Use log(contributions + 1) as the weight so that zones with
+                                    // 1 contribution are still clearly visible next to zones with 50.
+                                    // Without this, weight normalization makes low-count zones invisible:
+                                    //   raw weight 1 vs 50  ->  2% intensity -> transparent
+                                    //   log(2)   vs log(51) -> 35% intensity -> clearly visible
+                                    val weightedPoints = state.noiseZones.map {
                                         WeightedLatLng(
                                             LatLng(it.centerLatitude, it.centerLongitude),
-                                            it.totalContributions.toDouble(),
+                                            Math.log((it.totalContributions + 1).toDouble()),
                                         )
-                                    },
-                                )
-                                .build()
-                            TileOverlay(tileProvider = provider)
+                                    }
+
+                                    HeatmapTileProvider.Builder()
+                                        .weightedData(weightedPoints)
+                                        .radius(50)     // larger radius makes zones visible at city zoom
+                                        .opacity(0.8)   // slightly transparent so map labels show through
+                                        .build()
+                                }
+                                TileOverlay(tileProvider = provider)
+                            }
                         }
                     }
                     DockedSearchBar(

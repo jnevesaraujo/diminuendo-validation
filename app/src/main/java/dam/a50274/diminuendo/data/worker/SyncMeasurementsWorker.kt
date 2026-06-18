@@ -64,11 +64,16 @@ class SyncMeasurementsWorker @AssistedInject constructor(
                         newAverages[hour] =
                             ((existingAverages[hour] * total) + measurement.dbLevel) / newTotal
 
-                        // Write a typed NoiseZoneDto — never a raw Map.
+                        // Running average centre — same pattern as MeasurementRepositoryImpl
+                        val existingLat = snapshot.getDouble("centerLatitude") ?: measurement.latitude
+                        val existingLng = snapshot.getDouble("centerLongitude") ?: measurement.longitude
+                        val newCenterLat = (((existingLat ?: lat) * total) + measurement.latitude!!) / newTotal
+                        val newCenterLng = (((existingLng ?: lng) * total) + measurement.longitude!!) / newTotal
+
                         val updatedZone = NoiseZoneDto(
                             locationId = locationId,
-                            centerLatitude = lat,
-                            centerLongitude = lng,
+                            centerLatitude = newCenterLat,
+                            centerLongitude = newCenterLng,
                             locationName = measurement.locationName.ifBlank { "Zone $locationId" },
                             hourlyAverages = newAverages,
                             totalContributions = newTotal.toInt(),
