@@ -26,17 +26,50 @@ class NoiseZoneRepositoryImpl @Inject constructor(
             val listener = firestore.collection("noise_zones")
                 .addSnapshotListener { snapshot, error ->
                     if (error != null || snapshot == null) return@addSnapshotListener
-                    val dtos = snapshot.toObjects(NoiseZoneDto::class.java)
+
+                    // Use manual mapping instead of toObjects() to safely handle
+                    // Firestore's Number type ambiguity for List<Double> fields.
+                    val dtos = snapshot.documents.mapNotNull { doc ->
+                        try {
+                            val rawAverages = doc.get("hourlyAverages")
+                            // Firestore may deserialize whole-number doubles as Long.
+                            // Explicitly cast each element to Double regardless of source type.
+                            val hourlyAverages: List<Double> = when (rawAverages) {
+                                is List<*> -> rawAverages.map { element ->
+                                    when (element) {
+                                        is Double -> element
+                                        is Long -> element.toDouble()
+                                        is Int -> element.toDouble()
+                                        is Number -> element.toDouble()
+                                        else -> 0.0
+                                    }
+                                }
+                                else -> List(24) { 0.0 }
+                            }
+
+                            NoiseZoneDto(
+                                locationId = doc.getString("locationId") ?: doc.id,
+                                centerLatitude = doc.getDouble("centerLatitude") ?: 0.0,
+                                centerLongitude = doc.getDouble("centerLongitude") ?: 0.0,
+                                locationName = doc.getString("locationName") ?: "",
+                                hourlyAverages = hourlyAverages,
+                                totalContributions = (doc.getLong("totalContributions") ?: 0L).toInt(),
+                            )
+                        } catch (e: Exception) {
+                            // Log and skip malformed documents rather than crashing
+                            android.util.Log.w("NoiseZoneRepo", "Skipping malformed doc ${doc.id}: ${e.message}")
+                            null
+                        }
+                    }
+
                     // Use a stable scope not tied to the collector's lifetime
                     CoroutineScope(Dispatchers.IO).launch {
                         noiseZoneDao.insertAll(dtos.map { it.toEntity() })
                     }
+                    trySend(Unit)
                 }
 
-            trySend(Unit)
-            awaitClose {
-                listener.remove()
-            }
+            awaitClose { listener.remove() }
         }
 
         return noiseZoneDao.getAllNoiseZones().combine(syncFlow) { entities, _ ->

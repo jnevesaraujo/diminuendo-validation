@@ -64,27 +64,44 @@ class MeasurementRepositoryImpl @Inject constructor(
                     .await()
 
                 if (measurement.latitude != null && measurement.longitude != null) {
-                    // Calculate Geohash/Zone ID (Rounding to 2 decimal places for ~1.1km grid)
                     val lat = Math.round(measurement.latitude * 100.0) / 100.0
                     val lng = Math.round(measurement.longitude * 100.0) / 100.0
                     val locationId = "zone_${lat}_$lng"
 
-                    // Update Noise Zone via Transaction
                     val zoneRef = firestore.collection("noise_zones").document(locationId)
 
                     firestore.runTransaction { transaction ->
                         val snapshot = transaction.get(zoneRef)
                         val total = snapshot.getLong("totalContributions") ?: 0L
-                        val averages = snapshot.get("hourlyAverages") as? List<Double> ?: List(24) { 0.0 }
 
-                        val cal = Calendar.getInstance().apply { timeInMillis = measurement.timestamp }
-                        val hour = cal.get(Calendar.HOUR_OF_DAY)
+                        // Safely read hourlyAverages — Firestore may store whole-number doubles as Long
+                        val rawAverages = snapshot.get("hourlyAverages")
+                        val existingAverages: List<Double> = when (rawAverages) {
+                            is List<*> -> rawAverages.map { element ->
+                                when (element) {
+                                    is Double -> element
+                                    is Long   -> element.toDouble()
+                                    is Int    -> element.toDouble()
+                                    is Number -> element.toDouble()
+                                    else      -> 0.0
+                                }
+                            }.let { list ->
+                                // Pad or trim to exactly 24 slots
+                                if (list.size == 24) list else List(24) { i -> list.getOrElse(i) { 0.0 } }
+                            }
+                            else -> List(24) { 0.0 }
+                        }
+
+                        val cal = java.util.Calendar.getInstance().apply { timeInMillis = measurement.timestamp }
+                        val hour = cal.get(java.util.Calendar.HOUR_OF_DAY)
 
                         val newTotal = total + 1
-                        val newAverages = averages.toMutableList()
-                        newAverages[hour] = ((averages[hour] * total) + measurement.dbLevel) / newTotal
+                        val newAverages = existingAverages.toMutableList()
+                        newAverages[hour] = ((existingAverages[hour] * total) + measurement.dbLevel) / newTotal
 
-                        val updatedZone = NoiseZoneDto(
+                        // Write a typed NoiseZoneDto — NOT a raw Map — so Firestore stores
+                        // consistent types that toObjects() can deserialize correctly.
+                        val updatedZone = dam.a50274.diminuendo.data.remote.NoiseZoneDto(
                             locationId = locationId,
                             centerLatitude = lat,
                             centerLongitude = lng,
@@ -96,7 +113,7 @@ class MeasurementRepositoryImpl @Inject constructor(
                     }.await()
                 }
 
-                // Mark synced in Room
+                // After the withTimeout block succeeds, mark as synced:
                 dao.insertOrReplace(measurement.toEntity(pendingSync = false))
             }
         } catch (e: Exception) {
