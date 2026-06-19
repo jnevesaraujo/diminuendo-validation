@@ -35,10 +35,10 @@
 
 | Screen | Screen | Screen |
 |:---:|:---:|:---:|
-| ![Auth Screen](screenshots/xiaomi_login.jpg) | ![Profile Screen](screenshots/xiaomi_profile.jpg) | ![Heatmap Screen](screenshots/heatmap_screen.png) |
-| ![Zone Insights Bottom Sheet](screenshots/zone_insights_bottom_sheet.png) | ![Capture Live Sound Meter](screenshots/capture_live_meter.png) | ![Capture Waveform Canvas](screenshots/capture_waveform.png) |
-| ![Diary History Log](screenshots/diary_history_log.png) | ![Ai Consultant Chat](screenshots/ai_consultant_chat.png) | ![Paywall Gate](screenshots/paywall_gate.png) |
-| ![Profile Setup](screenshots/profile_setup.png) | ![Premium Active State](screenshots/premium_active_state.png) | ![Dark Mode Variation](screenshots/dark_mode_variation.png) |
+| ![Auth Screen](screenshots/xiaomi_login.jpg) | ![Profile Screen](screenshots/xiaomi_profile.jpg) | ![Heatmap Screen](screenshots/heatmap_screen.jpg) |
+| ![Capture Screen](screenshots/xiaomi_capturing.jpg) | ![Capture Screen](screenshots/xiaomi_savedSucessful.jpg) | ![Diary](screenshots/xiaomi_diary.jpg) |
+| ![Gemini Screen](screenshots/xiaomi_gemini.jpg) | ![Busy Hours Screen](screenshots/xiaomi_busyhours.jpg) | ![Unlock Premium](screenshots/xiaomi_premiumUnlock.jpg) |
+| ![Busy Hours Unlocked Screen](screenshots/xiaomi_busyhoursUnlocked.jpg) | - | - |
 
 
 ## Features
