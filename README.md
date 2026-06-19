@@ -35,7 +35,7 @@
 
 | Screen | Screen | Screen |
 |:---:|:---:|:---:|
-| ![Auth Screen](screenshots/xiaomi_login.png) | ![Auth Screen](screenshots/auth_screen.png) | ![Heatmap Screen](screenshots/heatmap_screen.png) |
+| ![Auth Screen](screenshots/xiaomi_login.jpg) | ![Profile Screen](screenshots/xiaomi_profile.jpg) | ![Heatmap Screen](screenshots/heatmap_screen.png) |
 | ![Zone Insights Bottom Sheet](screenshots/zone_insights_bottom_sheet.png) | ![Capture Live Sound Meter](screenshots/capture_live_meter.png) | ![Capture Waveform Canvas](screenshots/capture_waveform.png) |
 | ![Diary History Log](screenshots/diary_history_log.png) | ![Ai Consultant Chat](screenshots/ai_consultant_chat.png) | ![Paywall Gate](screenshots/paywall_gate.png) |
 | ![Profile Setup](screenshots/profile_setup.png) | ![Premium Active State](screenshots/premium_active_state.png) | ![Dark Mode Variation](screenshots/dark_mode_variation.png) |
