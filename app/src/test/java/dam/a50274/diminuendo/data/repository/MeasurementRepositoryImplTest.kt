@@ -12,6 +12,7 @@ import dam.a50274.diminuendo.utils.MainDispatcherRule
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -39,8 +40,6 @@ class MeasurementRepositoryImplTest {
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkCapabilities: NetworkCapabilities
 
-    // FLAG: FakeFirestoreDataSource could not be used because MeasurementRepositoryImpl directly depends on FirebaseFirestore.
-    // We cannot modify production code to introduce a DataSource interface per instructions, so MockK is used instead.
     private val firestore = mockk<com.google.firebase.firestore.FirebaseFirestore>(relaxed = true)
 
     private lateinit var repository: MeasurementRepositoryImpl
@@ -74,14 +73,19 @@ class MeasurementRepositoryImplTest {
         if (isOnline) {
             every { connectivityManager.activeNetwork } returns network
             every { connectivityManager.getNetworkCapabilities(network) } returns networkCapabilities
-            every { networkCapabilities.hasTransport(any()) } returns true
+            // FIX: isOnline() checks hasCapability(), not hasTransport().
+            // The old mock used hasTransport(any()) = true which never matched
+            // the NET_CAPABILITY_VALIDATED / NET_CAPABILITY_INTERNET checks,
+            // causing isOnline() to always return false in tests.
+            every { networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) } returns true
+            every { networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) } returns true
         } else {
             every { connectivityManager.activeNetwork } returns null
         }
     }
 
     @Test
-    fun saveMeasurement_whenOnline_writesBothRoomAndFirestore() = kotlinx.coroutines.runBlocking {
+    fun saveMeasurement_whenOnline_writesBothRoomAndFirestore() = runBlocking {
         setOnline(true)
         val measurement = Measurement(
             id = UUID.randomUUID().toString(),
@@ -95,7 +99,9 @@ class MeasurementRepositoryImplTest {
             locationName = "",
         )
 
-        // Mocking Firestore tasks for kotlinx.coroutines.tasks.await() fast path
+        // Mock the Firestore Task to resolve immediately via the fast path in .await().
+        // await() checks task.isComplete first — if true, it returns task.result
+        // directly without registering an addOnCompleteListener, so no looper needed.
         val task = mockk<com.google.android.gms.tasks.Task<Void>>(relaxed = true)
         every { task.isComplete } returns true
         every { task.isSuccessful } returns true
@@ -114,12 +120,12 @@ class MeasurementRepositoryImplTest {
         every { collRefMeas.document(any()) } returns docRefMeas
         every { docRefMeas.set(any()) } returns task
         every { docRefMeas.set(any(), any<com.google.firebase.firestore.SetOptions>()) } returns task
+        every { docRefMeas.set(any(), any()) } returns task
 
         repository.saveMeasurement(measurement)
 
-        val saved = dao.getPendingSync()
-        // Wait, pendingSync is marked false after successful upload
-        assertTrue(saved.isEmpty())
+        val pending = dao.getPendingSync()
+        assertTrue(pending.isEmpty())
 
         val all = dao.getAllByUser("user_123").first()
         assertEquals(1, all.size)
