@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "220177370490",
-    "project_id": "dam-fp",
-    "storage_bucket": "dam-fp.firebasestorage.app"
+    "project_number": "1234567890",
+    "project_id": "diminuendo-mock",
+    "storage_bucket": "diminuendo-mock.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:220177370490:android:2507ec7985f2331dcf5ac3",
+        "mobilesdk_app_id": "1:1234567890:android:abcdef123456",
         "android_client_info": {
           "package_name": "dam.a50274.diminuendo"
         }
@@ -15,12 +15,12 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBNLYZKqLq6P1Ybb4tkDbp0A3WJhVtUPYQ"
+          "current_key": ""
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "status": 1
         }
       }
     }
