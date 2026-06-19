@@ -34,18 +34,22 @@
 <!-- Screenshot(s) or GIF of the app running. -->
 
 | Screen | Screen | Screen |
-|---|---|---|
-| _img_ | _img_ | _img_ |
+|:---:|:---:|:---:|
+| ![Auth Screen](screenshots/xiaomi_login.png) | ![Auth Screen](screenshots/auth_screen.png) | ![Heatmap Screen](screenshots/heatmap_screen.png) |
+| ![Zone Insights Bottom Sheet](screenshots/zone_insights_bottom_sheet.png) | ![Capture Live Sound Meter](screenshots/capture_live_meter.png) | ![Capture Waveform Canvas](screenshots/capture_waveform.png) |
+| ![Diary History Log](screenshots/diary_history_log.png) | ![Ai Consultant Chat](screenshots/ai_consultant_chat.png) | ![Paywall Gate](screenshots/paywall_gate.png) |
+| ![Profile Setup](screenshots/profile_setup.png) | ![Premium Active State](screenshots/premium_active_state.png) | ![Dark Mode Variation](screenshots/dark_mode_variation.png) |
+
 
 ## Features
 
-- [ ] Screen 1 — ...
-- [ ] Screen 2 — ...
-- [ ] State sharing between users
-- [ ] AI integration (remote API / local model)
-- [ ] Multimedia (image / audio / video)
-- [ ] Freemium model (free usage + simulated paid subscription)
-- [ ] Offline mode
+- [x] Screen 1 — ...
+- [x] Screen 2 — ...
+- [x] State sharing between users
+- [x] AI integration (remote API / local model)
+- [x] Multimedia (audio)
+- [x] Freemium model (free usage + simulated paid subscription)
+- [x] Offline mode
 
 ## Stack
 
