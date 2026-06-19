@@ -252,8 +252,8 @@ fun HeatmapScreen(
 
                                     HeatmapTileProvider.Builder()
                                         .weightedData(weightedPoints)
-                                        .radius(50)     // larger radius makes zones visible at city zoom
-                                        .opacity(0.8)   // slightly transparent so map labels show through
+                                        .radius(50) // larger radius makes zones visible at city zoom
+                                        .opacity(0.8) // slightly transparent so map labels show through
                                         .build()
                                 }
                                 TileOverlay(tileProvider = provider)

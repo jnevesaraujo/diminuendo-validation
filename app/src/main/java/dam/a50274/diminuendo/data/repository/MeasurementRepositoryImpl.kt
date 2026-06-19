@@ -149,8 +149,11 @@ class MeasurementRepositoryImpl @Inject constructor(
             else -> emptyList()
         }
         // Pad to 24 or trim to 24
-        return if (list.size == 24) list
-        else List(24) { i -> list.getOrElse(i) { 0.0 } }
+        return if (list.size == 24) {
+            list
+        } else {
+            List(24) { i -> list.getOrElse(i) { 0.0 } }
+        }
     }
 
     /**

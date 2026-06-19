@@ -51,30 +51,36 @@ class NoiseZoneRepositoryImpl @Inject constructor(
                                 is List<*> -> rawAverages.map { element ->
                                     when (element) {
                                         is Double -> element
-                                        is Long   -> element.toDouble()
-                                        is Int    -> element.toDouble()
+                                        is Long -> element.toDouble()
+                                        is Int -> element.toDouble()
                                         is Number -> element.toDouble()
-                                        else      -> 0.0
+                                        else -> 0.0
                                     }
                                 }.let { list ->
-                                    if (list.size == 24) list
-                                    else List(24) { i -> list.getOrElse(i) { 0.0 } }
+                                    if (list.size == 24) {
+                                        list
+                                    } else {
+                                        List(24) { i -> list.getOrElse(i) { 0.0 } }
+                                    }
                                 }
                                 else -> List(24) { 0.0 }
                             }
 
                             val dto = NoiseZoneDto(
-                                locationId         = doc.getString("locationId") ?: doc.id,
-                                centerLatitude     = doc.getDouble("centerLatitude") ?: 0.0,
-                                centerLongitude    = doc.getDouble("centerLongitude") ?: 0.0,
-                                locationName       = doc.getString("locationName") ?: "",
-                                hourlyAverages     = hourlyAverages,
+                                locationId = doc.getString("locationId") ?: doc.id,
+                                centerLatitude = doc.getDouble("centerLatitude") ?: 0.0,
+                                centerLongitude = doc.getDouble("centerLongitude") ?: 0.0,
+                                locationName = doc.getString("locationName") ?: "",
+                                hourlyAverages = hourlyAverages,
                                 totalContributions = (doc.getLong("totalContributions") ?: 0L).toInt(),
                             )
 
-                            Log.d(TAG, "Parsed zone: ${dto.locationId} " +
-                                "lat=${dto.centerLatitude} lng=${dto.centerLongitude} " +
-                                "contributions=${dto.totalContributions}")
+                            Log.d(
+                                TAG,
+                                "Parsed zone: ${dto.locationId} " +
+                                    "lat=${dto.centerLatitude} lng=${dto.centerLongitude} " +
+                                    "contributions=${dto.totalContributions}",
+                            )
                             dto
                         } catch (e: Exception) {
                             Log.w(TAG, "Skipping malformed doc ${doc.id}: ${e.message}")

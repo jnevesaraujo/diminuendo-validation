@@ -1,9 +1,5 @@
 package dam.a50274.diminuendo.domain.model
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-
 enum class NoiseClassification(val label: String) {
     SAFE("Safe"),
     CONCERNING("Concerning"),

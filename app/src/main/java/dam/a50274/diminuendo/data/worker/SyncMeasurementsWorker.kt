@@ -111,7 +111,10 @@ class SyncMeasurementsWorker @AssistedInject constructor(
             }
             else -> emptyList()
         }
-        return if (list.size == 24) list
-        else List(24) { i -> list.getOrElse(i) { 0.0 } }
+        return if (list.size == 24) {
+            list
+        } else {
+            List(24) { i -> list.getOrElse(i) { 0.0 } }
+        }
     }
 }

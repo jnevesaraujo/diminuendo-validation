@@ -36,9 +36,12 @@ class DiaryViewModel @Inject constructor(
         dataStore.data
             .map { it[PreferencesKeys.USER_ID] ?: "" }
             .flatMapLatest { userId ->
-                if (userId.isEmpty()) flowOf(DiaryUiState(isLoading = false, error = "Not authenticated"))
-                else getMeasurementHistoryUseCase(userId).map { measurements ->
-                    DiaryUiState(isLoading = false, measurements = measurements)
+                if (userId.isEmpty()) {
+                    flowOf(DiaryUiState(isLoading = false, error = "Not authenticated"))
+                } else {
+                    getMeasurementHistoryUseCase(userId).map { measurements ->
+                        DiaryUiState(isLoading = false, measurements = measurements)
+                    }
                 }
             }
             .catch { e -> emit(DiaryUiState(isLoading = false, error = e.message ?: "Unknown error")) },

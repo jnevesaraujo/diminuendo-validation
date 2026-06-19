@@ -31,10 +31,7 @@ class NetworkMonitorImpl(private val context: Context) : NetworkMonitor {
                 trySend(checkIsOnline(connectivityManager))
             }
 
-            override fun onCapabilitiesChanged(
-                network: Network,
-                networkCapabilities: NetworkCapabilities,
-            ) {
+            override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
                 // Must check NET_CAPABILITY_VALIDATED, not just NET_CAPABILITY_INTERNET.
                 // NET_CAPABILITY_INTERNET means the network *declares* internet access.
                 // NET_CAPABILITY_VALIDATED means Android has *confirmed* internet access

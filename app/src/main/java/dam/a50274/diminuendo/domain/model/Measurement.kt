@@ -10,7 +10,7 @@ data class Measurement(
     val longitude: Double?,
     val contextTag: String,
     val locationName: String,
-    val pendingSync: Boolean = false // defaults to false; set true by repository
+    val pendingSync: Boolean = false,
 ) {
 
     override fun equals(other: Any?): Boolean {

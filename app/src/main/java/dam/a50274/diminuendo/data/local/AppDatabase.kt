@@ -9,7 +9,7 @@ import androidx.room.TypeConverters
         MeasurementEntity::class,
         NoiseZoneEntity::class,
     ],
-    version = 4, // bumped from 3 — MeasurementEntity schema changed (pendingSync surfaced to domain)
+    version = 4,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
