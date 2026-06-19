@@ -69,6 +69,52 @@ emulator/device with the indicated minimum API.
 
 Short summary + diagram. Full detail in [`docs/06_architecture.md`](docs/06_architecture.md).
 
+```
+📂 dam.a50274.diminuendo
+├── 📂 di
+│   └── 📄 AppModule, AuthModule, DatabaseModule, DataStoreModule, RepositoryModule, WorkerModule
+├── 📂 domain
+│   ├── 📂 model
+│   │   └── 📄 Measurement, NoiseZone, User, ChatMessage, NoiseClassification
+│   ├── 📂 repository
+│   │   └── 📄 Repository interfaces
+│   ├── 📂 usecase
+│   │   └── 📄 CheckEntitlementUseCase, SaveMeasurementUseCase, GetMeasurementHistoryUseCase, DeleteMeasurementUseCase
+│   └── 📂 util
+│       └── 📄 NetworkMonitor interface
+├── 📂 data
+│   ├── 📂 local
+│   │   └── 📄 Room database, DAOs, entities, type converters, DataStore keys
+│   ├── 📂 remote
+│   │   └── 📄 Firestore DTOs, AuthRepositoryImpl
+│   ├── 📂 repository
+│   │   └── 📄 MeasurementRepositoryImpl, NoiseZoneRepositoryImpl, AudioCaptureRepositoryImpl, LocationRepositoryImpl, SubscriptionRepositoryImpl
+│   ├── 📂 mapper
+│   │   └── 📄 Extension functions mapping between Entity ↔ Domain ↔ DTO
+│   ├── 📂 worker
+│   │   └── 📄 SyncMeasurementsWorker
+│   └── 📂 util
+│       └── 📄 NetworkMonitorImpl
+└── 📂 ui
+    ├── 📂 navigation
+    │   └── 📄 NavGraph, AppShell, type-safe route objects
+    ├── 📂 theme
+    │   └── 📄 Material 3 colour schemes, typography
+    ├── 📂 components
+    │   └── 📄 NoiseClassificationExt
+    └── 📂 feature
+        ├── 📂 auth (Screen, ViewModel, UiState, Action)
+        ├── 📂 capture (Screen, ViewModel, UiState, Action)
+        ├── 📂 diary (Screen, ViewModel, UiState, Action)
+        ├── 📂 heatmap (Screen, BottomSheet, ViewModel, UiState, Action, Event)
+        ├── 📂 ai (Screen, ViewModel, UiState, Action, Event)
+        ├── 📂 paywall (Screen, ViewModel, Event)
+        ├── 📂 profile (Screen, ViewModel, UiState)
+        └── 📂 splash (ViewModel)
+
+```
+
+
 ## Documentation
 
 All the engineering design is in [`docs/`](docs/). Decisions in [`docs/adr/`](docs/adr/).
