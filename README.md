@@ -35,7 +35,7 @@
 
 | Screen | Screen | Screen |
 |:---:|:---:|:---:|
-| ![Auth Screen](screenshots/xiaomi_login.jpg) | ![Profile Screen](screenshots/xiaomi_profile.jpg) | ![Heatmap Screen](screenshots/heatmap_screen.jpg) |
+| ![Auth Screen](screenshots/xiaomi_login.jpg) | ![Profile Screen](screenshots/xiaomi_profile.jpg) | ![Heatmap Screen](screenshots/xiaomi_heatmap.jpg) |
 | ![Capture Screen](screenshots/xiaomi_capturing.jpg) | ![Capture Screen](screenshots/xiaomi_savedSucessful.jpg) | ![Diary](screenshots/xiaomi_diary.jpg) |
 | ![Gemini Screen](screenshots/xiaomi_gemini.jpg) | ![Busy Hours Screen](screenshots/xiaomi_busyhours.jpg) | ![Unlock Premium](screenshots/xiaomi_premiumUnlock.jpg) |
 | ![Busy Hours Unlocked Screen](screenshots/xiaomi_busyhoursUnlocked.jpg) | - | - |
